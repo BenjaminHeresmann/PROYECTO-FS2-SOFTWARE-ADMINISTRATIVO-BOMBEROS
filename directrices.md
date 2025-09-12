@@ -217,18 +217,38 @@ footer { }
 4. **EDUCATIVO**: Código que enseñe, no que confunda
 5. **SIMPLICIDAD**: Lo simple que funciona > lo complejo que impresiona
 
+### 🧹 **REGLA DE ORO: CÓDIGO LIMPIO EN CADA MODIFICACIÓN**
+```
+✅ OBLIGATORIO EN TODA MODIFICACIÓN:
+- Eliminar código residual sin uso
+- No dejar código comentado antiguo
+- Actualizar referencias rotas o cambios de nombres
+- Limpiar imports/links innecesarios
+- Remover estilos CSS huérfanos
+- Eliminar variables JS no utilizadas
+- Actualizar comentarios obsoletos
+
+🚫 NUNCA PERMITIR:
+- Código muerto que "por si acaso"
+- Funciones deprecadas sin eliminar
+- Estilos CSS de secciones eliminadas
+- Variables o selectores sin uso
+- Comentarios desactualizados que confundan
+```
+
 ### 🎯 **PREGUNTA GUÍA ANTES DE CADA CAMBIO:**
 - "¿Un estudiante principiante puede entender esto?"
 - "¿Estoy usando solo HTML, CSS y JavaScript vanilla?"
 - "¿La estructura es lógica y modular?"
 - "¿Estoy separando lo que debe estar separado?"
 - "¿Estoy juntando lo que debe estar junto?"
+- "¿Eliminé todo el código residual de modificaciones anteriores?"
 
 ---
 
 ## 📅 **CONTROL DE VERSIÓN**
 - **Creado**: Septiembre 11, 2025
-- **Última actualización**: Septiembre 11, 2025
+- **Última actualización**: Septiembre 11, 2025 - Añadida regla de código limpio
 - **Vigencia**: PERMANENTE para este proyecto
 - **Revisar**: Antes de cada modificación importante
 

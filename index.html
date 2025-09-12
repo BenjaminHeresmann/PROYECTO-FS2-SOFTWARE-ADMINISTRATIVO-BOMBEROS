@@ -16,9 +16,9 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="#inicio" class="active">Home</a></li>
+                    <li><a href="#inicio" class="active">Inicio</a></li>
                     <li><a href="#bomberos">Bomberos</a></li>
-                    <li><a href="#nosotros">Nosotros</a></li>
+                    <li><a href="#oficiales">Oficiales</a></li>
                     <li><a href="#solicitud">Solicitud</a></li>
                     <li><a href="#citaciones">Citaciones</a></li>
                 </ul>
@@ -109,47 +109,106 @@
             </div>
         </section>
 
-        <!-- Sección nosotros -->
-        <section id="nosotros">
-            <h2>Nosotros</h2>
-            <div class="card">
-                <p>La 2DA COMPAÑÍA DE BOMBEROS es una institución dedicada al servicio de la comunidad. Nuestros voluntarios trabajan día a día para proteger vidas y propiedades.</p>
-                <div class="placeholder-image">
-                    <span>🏢 Cuartel de Bomberos</span>
+        <!-- Sección oficiales -->
+        <section id="oficiales">
+            <h2>OFICIALES</h2>
+            <div class="bomberos-grid">
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>👨‍💼</span>
+                    </div>
+                    <h3>DIRECTOR</h3>
+                    <p class="atributos">Máxima autoridad administrativa</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>📋</span>
+                    </div>
+                    <h3>SECRETARIO</h3>
+                    <p class="atributos">Gestión documental y actas</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>💰</span>
+                    </div>
+                    <h3>TESORERO</h3>
+                    <p class="atributos">Administración financiera</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>🎖️</span>
+                    </div>
+                    <h3>CAPITÁN</h3>
+                    <p class="atributos">Comando operativo superior</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>🥇</span>
+                    </div>
+                    <h3>TENIENTE PRIMERO</h3>
+                    <p class="atributos">Segundo al mando operativo</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>🥈</span>
+                    </div>
+                    <h3>TENIENTE SEGUNDO</h3>
+                    <p class="atributos">Apoyo comando operativo</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>🥉</span>
+                    </div>
+                    <h3>TENIENTE TERCERO</h3>
+                    <p class="atributos">Supervisión operativa</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>🛠️</span>
+                    </div>
+                    <h3>AYUDANTE</h3>
+                    <p class="atributos">Soporte administrativo</p>
                 </div>
             </div>
         </section>
 
         <!-- Sección solicitud -->
         <section id="solicitud">
-            <h2>Solicitud de Ingreso</h2>
-            <form id="formulario-solicitud">
-                <div class="form-group">
-                    <label for="nombre-completo">Nombre Completo:</label>
-                    <input type="text" id="nombre-completo" name="nombre-completo" required>
+            <h2>Solicitudes</h2>
+            <div class="solicitud-container">
+                <div class="tipo-solicitud-section">
+                    <h3>Tipo de Solicitud</h3>
+                    <form id="formulario-tipo-solicitud">
+                        <div class="form-group">
+                            <label for="tipo-solicitud">Seleccionar tipo de solicitud:</label>
+                            <select id="tipo-solicitud" name="tipo-solicitud" required>
+                                <option value="">-- Seleccione una opción --</option>
+                                <option value="ingreso">Solicitud de Ingreso</option>
+                                <option value="permiso">Solicitud de Permiso</option>
+                                <option value="licencia">Solicitud de Licencia</option>
+                                <option value="traslado">Solicitud de Traslado</option>
+                                <option value="capacitacion">Solicitud de Capacitación</option>
+                                <option value="equipamiento">Solicitud de Equipamiento</option>
+                                <option value="otra">Otra Solicitud</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre-solicitante">Nombre del Solicitante:</label>
+                            <input type="text" id="nombre-solicitante" name="nombre-solicitante" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rut-solicitante">RUT:</label>
+                            <input type="text" id="rut-solicitante" name="rut-solicitante" placeholder="12.345.678-9" required>
+                        </div>
+                        <button type="button" id="continuar-solicitud">Continuar con Detalles</button>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="rut">RUT:</label>
-                    <input type="text" id="rut" name="rut" placeholder="12.345.678-9" required>
+                
+                <div class="detalles-solicitud-section" id="detalles-section" style="display: none;">
+                    <h3>Detalles de la Solicitud</h3>
+                    <p class="info-detalles">Los campos específicos se mostrarán según el tipo de solicitud seleccionado.</p>
                 </div>
-                <div class="form-group">
-                    <label for="edad">Edad:</label>
-                    <input type="number" id="edad" name="edad" min="18" max="65" required>
-                </div>
-                <div class="form-group">
-                    <label for="telefono">Teléfono:</label>
-                    <input type="tel" id="telefono" name="telefono" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="motivacion">Motivación para ser bombero:</label>
-                    <textarea id="motivacion" name="motivacion" rows="4" required></textarea>
-                </div>
-                <button type="submit">Enviar Solicitud</button>
-            </form>
+            </div>
         </section>
 
         <!-- Sección citaciones -->

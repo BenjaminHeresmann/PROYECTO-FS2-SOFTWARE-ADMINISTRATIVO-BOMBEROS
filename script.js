@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const seccion = document.querySelector(destino);
             
             if (seccion) {
+                // Actualizar el URL en la barra de direcciones
+                window.history.pushState(null, null, destino);
+                
+                // Navegar suavemente a la sección
                 seccion.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
@@ -39,42 +43,53 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Función para el formulario de solicitud de ingreso
-    const formularioSolicitud = document.getElementById('formulario-solicitud');
-    formularioSolicitud.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Obtener los valores del formulario
-        const nombreCompleto = document.getElementById('nombre-completo').value;
-        const rut = document.getElementById('rut').value;
-        const edad = document.getElementById('edad').value;
-        const telefono = document.getElementById('telefono').value;
-        const email = document.getElementById('email').value;
-        const motivacion = document.getElementById('motivacion').value;
+    // Función para el sistema de solicitudes
+    const botonContinuarSolicitud = document.getElementById('continuar-solicitud');
+    const detallesSection = document.getElementById('detalles-section');
+    const tipoSolicitudSelect = document.getElementById('tipo-solicitud');
+    
+    botonContinuarSolicitud.addEventListener('click', function() {
+        const tipoSeleccionado = tipoSolicitudSelect.value;
+        const nombreSolicitante = document.getElementById('nombre-solicitante').value;
+        const rutSolicitante = document.getElementById('rut-solicitante').value;
         
         // Validación básica
-        if (!nombreCompleto || !rut || !edad || !telefono || !email || !motivacion) {
-            alert('Por favor, completa todos los campos de la solicitud');
+        if (!tipoSeleccionado || !nombreSolicitante || !rutSolicitante) {
+            alert('Por favor, completa todos los campos antes de continuar');
             return;
         }
         
-        // Validar edad mínima
-        if (edad < 18) {
-            alert('Debes ser mayor de 18 años para postular como bombero');
-            return;
-        }
+        // Mostrar sección de detalles
+        detallesSection.style.display = 'block';
+        detallesSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
         
-        // Simular procesamiento de solicitud
-        alert('¡Gracias ' + nombreCompleto + '! Tu solicitud de ingreso ha sido recibida.\n\n' +
-              'Datos registrados:\n' +
-              '- RUT: ' + rut + '\n' +
-              '- Edad: ' + edad + ' años\n' +
-              '- Email: ' + email + '\n\n' +
-              'Te contactaremos pronto para continuar con el proceso.');
-        
-        // Limpiar el formulario
-        formularioSolicitud.reset();
+        // Actualizar información en la sección de detalles
+        const infoDetalles = document.querySelector('.info-detalles');
+        infoDetalles.innerHTML = `
+            <strong>Solicitud iniciada:</strong><br>
+            Tipo: ${getTipoSolicitudTexto(tipoSeleccionado)}<br>
+            Solicitante: ${nombreSolicitante}<br>
+            RUT: ${rutSolicitante}<br><br>
+            <em>Los campos específicos para este tipo de solicitud se cargarán aquí.</em>
+        `;
     });
+    
+    // Función auxiliar para obtener texto del tipo de solicitud
+    function getTipoSolicitudTexto(valor) {
+        const tipos = {
+            'ingreso': 'Solicitud de Ingreso',
+            'permiso': 'Solicitud de Permiso',
+            'licencia': 'Solicitud de Licencia',
+            'traslado': 'Solicitud de Traslado',
+            'capacitacion': 'Solicitud de Capacitación',
+            'equipamiento': 'Solicitud de Equipamiento',
+            'otra': 'Otra Solicitud'
+        };
+        return tipos[valor] || valor;
+    }
     
     // Función para interacción con las tarjetas de bomberos
     const bomberCards = document.querySelectorAll('.bombero-card');
@@ -231,3 +246,67 @@ function contarBomberos() {
 
 // Ejecutar conteo después de que cargue la página
 setTimeout(contarBomberos, 1000);
+
+// Manejar navegación con botones del navegador (atrás/adelante)
+window.addEventListener('popstate', function(event) {
+    const hash = window.location.hash;
+    if (hash) {
+        const seccion = document.querySelector(hash);
+        if (seccion) {
+            // Actualizar enlace activo
+            const enlacesNav = document.querySelectorAll('nav a');
+            enlacesNav.forEach(function(link) {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === hash) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Navegar a la sección
+            seccion.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    } else {
+        // Si no hay hash, ir a inicio
+        const inicioLink = document.querySelector('nav a[href="#inicio"]');
+        if (inicioLink) {
+            inicioLink.classList.add('active');
+            document.getElementById('inicio').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }
+});
+
+// Función para establecer la sección activa al cargar la página
+function establecerSeccionInicial() {
+    const hash = window.location.hash;
+    if (hash) {
+        const enlace = document.querySelector(`nav a[href="${hash}"]`);
+        const seccion = document.querySelector(hash);
+        
+        if (enlace && seccion) {
+            // Remover clase active de todos los enlaces
+            document.querySelectorAll('nav a').forEach(function(link) {
+                link.classList.remove('active');
+            });
+            
+            // Añadir clase active al enlace correspondiente
+            enlace.classList.add('active');
+            
+            // Navegar a la sección después de un pequeño delay
+            setTimeout(function() {
+                seccion.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+        }
+    }
+}
+
+// Establecer sección inicial al cargar la página
+establecerSeccionInicial();

@@ -258,13 +258,42 @@ button:hover {
     margin-top: 1rem;
 }
 
-/* Formulario de solicitud */
-form {
-    max-width: 600px;
+/* Formularios de solicitud */
+.solicitud-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 800px;
     margin: 0 auto;
+}
+
+.tipo-solicitud-section,
+.detalles-solicitud-section {
     background-color: #f8f9fa;
     padding: 2rem;
     border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tipo-solicitud-section h3,
+.detalles-solicitud-section h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+}
+
+.info-detalles {
+    background-color: #e9ecef;
+    padding: 1rem;
+    border-radius: 4px;
+    color: #666;
+    font-style: italic;
+    text-align: center;
+}
+
+form {
+    max-width: 100%;
 }
 
 .form-group {
@@ -431,6 +460,15 @@ footer {
     .bomberos-grid {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
+    }
+    
+    .solicitud-container {
+        gap: 1rem;
+    }
+    
+    .tipo-solicitud-section,
+    .detalles-solicitud-section {
+        padding: 1.5rem;
     }
     
     .footer-content {
