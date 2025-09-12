@@ -3,7 +3,39 @@
 // Arquitectura limpia y modular
 // ========================================
 
-// 📋 CONFIGURACIÓN DE RUTAS
+// � SISTEMA DE AUTENTICACIÓN
+let sistemaAutenticado = false;
+
+// 👥 BASE DE DATOS DE USUARIOS (Simulada)
+const USUARIOS_BOMBEROS = {
+    'comandante@bomberos.cl': { 
+        password: 'admin123', 
+        nombre: 'Carlos Rodríguez',
+        rol: 'Comandante' 
+    },
+    'capitan@bomberos.cl': { 
+        password: 'cap456', 
+        nombre: 'María González',
+        rol: 'Capitán' 
+    },
+    'teniente@bomberos.cl': { 
+        password: 'ten789', 
+        nombre: 'Luis Martínez',
+        rol: 'Teniente' 
+    },
+    'sargento@bomberos.cl': { 
+        password: 'sar012', 
+        nombre: 'Ana López',
+        rol: 'Sargento' 
+    },
+    'bombero@bomberos.cl': { 
+        password: 'bomb345', 
+        nombre: 'Pedro Sánchez',
+        rol: 'Bombero' 
+    }
+};
+
+// �📋 CONFIGURACIÓN DE RUTAS
 const RUTAS = {
     '/': 'inicio',
     '/bomberos': 'bomberos', 
@@ -89,10 +121,19 @@ class SimpleRouter {
 // INICIALIZAR APLICACIÓN
 // ========================================
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚒 Sistema de Bomberos con Routing "/" cargado correctamente!');
+    console.log('🚒 Sistema de Bomberos con Login cargado correctamente!');
     
-    // Inicializar router
-    const router = new SimpleRouter();
+    // Verificar estado de autenticación al cargar
+    verificarEstadoInicial();
+    
+    // Configurar sistema de login
+    configurarLogin();
+    
+    // Inicializar router solo si está autenticado
+    let router;
+    if (sistemaAutenticado) {
+        router = new SimpleRouter();
+    }
     
     // ========================================
     // SISTEMA DE SOLICITUDES
@@ -212,4 +253,134 @@ function getTipoSolicitudTexto(valor) {
         'otra': 'Otra Solicitud'
     };
     return tipos[valor] || valor;
+}
+
+// ========================================
+// SISTEMA DE AUTENTICACIÓN - FUNCIONES
+// ========================================
+
+// 🔍 FUNCIÓN: Verificar estado inicial al cargar página
+function verificarEstadoInicial() {
+    // Comprobar si hay sesión guardada
+    const sesionGuardada = localStorage.getItem('bomberosAuth');
+    const usuarioGuardado = localStorage.getItem('bomberosUser');
+    
+    if (sesionGuardada === 'true' && usuarioGuardado) {
+        sistemaAutenticado = true;
+        mostrarSistemaPrincipal();
+        mostrarInfoUsuario(JSON.parse(usuarioGuardado));
+    } else {
+        sistemaAutenticado = false;
+        mostrarPaginaLogin();
+    }
+}
+
+// 🔐 FUNCIÓN: Configurar formulario de login
+function configurarLogin() {
+    const loginForm = document.getElementById('loginForm');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    // Evento del formulario de login
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (validarCredenciales(email, password)) {
+                const usuario = USUARIOS_BOMBEROS[email];
+                
+                // Guardar sesión
+                localStorage.setItem('bomberosAuth', 'true');
+                localStorage.setItem('bomberosUser', JSON.stringify({
+                    email: email,
+                    nombre: usuario.nombre,
+                    rol: usuario.rol
+                }));
+                
+                // Actualizar estado
+                sistemaAutenticado = true;
+                
+                // Mostrar sistema principal
+                mostrarSistemaPrincipal();
+                mostrarInfoUsuario(usuario);
+                
+                // Inicializar router
+                const router = new SimpleRouter();
+                
+                console.log('🚒 ¡Login exitoso! Usuario:', usuario.nombre);
+                
+            } else {
+                mostrarErrorLogin('❌ Credenciales incorrectas. Verifique su email y contraseña.');
+            }
+        });
+    }
+    
+    // Evento del botón cerrar sesión
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            cerrarSesion();
+        });
+    }
+}
+
+// ✅ FUNCIÓN: Validar credenciales de usuario
+function validarCredenciales(email, password) {
+    const usuario = USUARIOS_BOMBEROS[email];
+    return usuario && usuario.password === password;
+}
+
+// 📱 FUNCIÓN: Mostrar página de login
+function mostrarPaginaLogin() {
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('mainHeader').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'none';
+}
+
+// 🏠 FUNCIÓN: Mostrar sistema principal
+function mostrarSistemaPrincipal() {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainHeader').style.display = 'block';
+    document.getElementById('mainContent').style.display = 'block';
+}
+
+// 👤 FUNCIÓN: Mostrar información del usuario
+function mostrarInfoUsuario(usuario) {
+    const userInfo = document.getElementById('userInfo');
+    if (userInfo) {
+        userInfo.textContent = `👋 ${usuario.nombre} (${usuario.rol})`;
+    }
+}
+
+// ❌ FUNCIÓN: Mostrar error de login
+function mostrarErrorLogin(mensaje) {
+    const errorDiv = document.getElementById('loginError');
+    if (errorDiv) {
+        errorDiv.textContent = mensaje;
+        errorDiv.style.display = 'block';
+        
+        // Ocultar después de 4 segundos
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 4000);
+    }
+}
+
+// 🚪 FUNCIÓN: Cerrar sesión
+function cerrarSesion() {
+    // Limpiar almacenamiento
+    localStorage.removeItem('bomberosAuth');
+    localStorage.removeItem('bomberosUser');
+    
+    // Actualizar estado
+    sistemaAutenticado = false;
+    
+    // Mostrar login
+    mostrarPaginaLogin();
+    
+    // Limpiar formulario
+    document.getElementById('loginForm').reset();
+    
+    console.log('🚪 Sesión cerrada correctamente');
 }

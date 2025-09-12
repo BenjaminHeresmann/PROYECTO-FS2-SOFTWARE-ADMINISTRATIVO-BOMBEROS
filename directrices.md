@@ -5,7 +5,15 @@
 ### 🟢 **NIVEL: ESTUDIANTIL BÁSICO**
 - **Target**: Estudiante que está empezando a aprender frontend
 - **Conocimientos**: Sin experiencia previa en desarrollo web avanzado
-- **Objetivo**: Aprender fundamentos sólidos paso a paso
+- **Objetivo**: Aprender funda### 🎯 **PREGUNTA GUÍA ANTES DE CADA CAMBIO:**
+- "¿Un estudiante principiante puede entender esto?"
+- "¿Estoy usando solo HTML, CSS y JavaScript vanilla?"
+- "¿La estructura es lógica y modular?"
+- "¿Estoy separando lo que debe estar separado?"
+- "¿Estoy juntando lo que debe estar junto?"
+- "¿Eliminé todo el código residual de modificaciones anteriores?"
+- "¿La nueva sección tiene su URL independiente con '/'?"
+- "¿Agregué la ruta al objeto RUTAS del sistema de navegación?"sólidos paso a paso
 
 ### 🛠️ **TECNOLOGÍAS PERMITIDAS - SOLO BÁSICAS**
 ```
@@ -93,6 +101,39 @@ Proyecto/
 - Todos los estilos de botones en una sección CSS
 - Todas las funciones de formulario juntas en JS
 - Elementos relacionados del DOM cerca en HTML
+```
+
+### 🌐 **PRINCIPIO 5: NAVEGACIÓN CON URLs INDEPENDIENTES**
+```
+✅ OBLIGATORIO PARA TODAS LAS SECCIONES:
+- Cada sección debe tener su URL única con "/"
+- Sistema de routing moderno implementado
+- URLs legibles y descriptivas
+- Navegación independiente entre secciones
+
+✅ PATRÓN DE URLs REQUERIDO:
+- Inicio: / 
+- Secciones: /nombre-seccion
+- Ejemplos: /bomberos, /oficiales, /solicitud, /citaciones
+- NO usar: #hash, ?query, URLs complejas
+
+✅ IMPLEMENTACIÓN TÉCNICA:
+- Clase Router centralizada en JavaScript vanilla
+- History API para botones atrás/adelante del navegador
+- Actualización automática de URL al cambiar sección
+- Enlaces internos con href="/ruta"
+
+✅ BENEFICIOS EDUCATIVOS:
+- URLs compartibles y marcables
+- Navegación profesional moderna
+- Experiencia de usuario mejorada
+- Preparación para desarrollo real
+
+❌ PROHIBIDO:
+- Navegación solo con JavaScript sin URL
+- URLs que no cambien al navegar
+- Sistema de hash (#) como única navegación
+- Enlaces que no reflejen la sección actual
 ```
 
 ---
@@ -216,6 +257,7 @@ footer { }
 3. **MODULARIDAD**: Separar responsabilidades claramente
 4. **EDUCATIVO**: Código que enseñe, no que confunda
 5. **SIMPLICIDAD**: Lo simple que funciona > lo complejo que impresiona
+6. **URLs INDEPENDIENTES**: Toda sección nueva debe tener su ruta única
 
 ### 🧹 **REGLA DE ORO: CÓDIGO LIMPIO EN CADA MODIFICACIÓN**
 ```
@@ -236,7 +278,38 @@ footer { }
 - Comentarios desactualizados que confundan
 ```
 
-### 🎯 **PREGUNTA GUÍA ANTES DE CADA CAMBIO:**
+### � **EJEMPLO PRÁCTICO: AÑADIR NUEVA SECCIÓN CON URL INDEPENDIENTE**
+```html
+<!-- 1. HTML: Añadir enlace en navegación -->
+<li><a href="/nueva-seccion" class="nav-link" data-section="nueva">🆕 Nueva Sección</a></li>
+
+<!-- 2. HTML: Crear sección en el body -->
+<section id="nueva">
+    <h2>Nueva Sección</h2>
+    <p>Contenido de la nueva sección...</p>
+</section>
+```
+
+```javascript
+// 3. JavaScript: Añadir ruta al objeto RUTAS
+const RUTAS = {
+    '/': 'inicio',
+    '/bomberos': 'bomberos',
+    '/oficiales': 'oficiales', 
+    '/solicitud': 'solicitud',
+    '/citaciones': 'citaciones',
+    '/nueva-seccion': 'nueva'  // ← Nueva ruta añadida
+};
+```
+
+```css
+/* 4. CSS: Estilos específicos si es necesario */
+#nueva {
+    /* Estilos para la nueva sección */
+}
+```
+
+### �🎯 **PREGUNTA GUÍA ANTES DE CADA CAMBIO:**
 - "¿Un estudiante principiante puede entender esto?"
 - "¿Estoy usando solo HTML, CSS y JavaScript vanilla?"
 - "¿La estructura es lógica y modular?"
@@ -248,7 +321,7 @@ footer { }
 
 ## 📅 **CONTROL DE VERSIÓN**
 - **Creado**: Septiembre 11, 2025
-- **Última actualización**: Septiembre 11, 2025 - Añadida regla de código limpio
+- **Última actualización**: Septiembre 11, 2025 - Añadida directriz de URLs independientes
 - **Vigencia**: PERMANENTE para este proyecto
 - **Revisar**: Antes de cada modificación importante
 
