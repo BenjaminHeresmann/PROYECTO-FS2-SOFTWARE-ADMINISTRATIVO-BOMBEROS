@@ -34,6 +34,17 @@ header {
     flex-wrap: wrap;
 }
 
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo {
+    height: 50px;
+    width: auto;
+}
+
 .logo-section h1 {
     color: #333;
     font-size: 1.5rem;
@@ -145,6 +156,14 @@ h2 {
 .hero-image {
     flex: 1;
     min-width: 300px;
+}
+
+.hero-logo {
+    max-width: 100%;
+    height: auto;
+    max-height: 300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .placeholder-image {
