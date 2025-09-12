@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2DA COMPAÑÍA BOMBEROS - Sistema Web</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Encabezado -->
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <h1>🚒 Site Name</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#inicio" class="active">Home</a></li>
+                    <li><a href="#bomberos">Bomberos</a></li>
+                    <li><a href="#nosotros">Nosotros</a></li>
+                    <li><a href="#solicitud">Solicitud</a></li>
+                    <li><a href="#citaciones">Citaciones</a></li>
+                </ul>
+            </nav>
+            <div class="auth-section">
+                <a href="#" id="iniciar-sesion">Iniciar sesión</a> | 
+                <a href="#" id="registrar-usuario">Registrar usuario</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main>
+        <!-- Sección de inicio -->
+        <section id="inicio" class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h2>2DA COMPAÑÍA BOMBEROS</h2>
+                    <p class="lorem-text">LOREM IPSUM</p>
+                    <button id="ver-bomberos" class="btn-principal">VER BOMBEROS</button>
+                </div>
+                <div class="hero-image">
+                    <div class="placeholder-image">
+                        <span>🚒 Imagen Principal</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección bomberos -->
+        <section id="bomberos">
+            <h2>Nuestros Bomberos</h2>
+            <div class="bomberos-grid">
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>👨‍🚒</span>
+                    </div>
+                    <h3>BOMBERO 1</h3>
+                    <p class="atributos">Atributos</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>👨‍🚒</span>
+                    </div>
+                    <h3>BOMBERO 2</h3>
+                    <p class="atributos">Atributos</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>👨‍🚒</span>
+                    </div>
+                    <h3>BOMBERO 3</h3>
+                    <p class="atributos">Atributos</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>👨‍🚒</span>
+                    </div>
+                    <h3>BOMBERO 4</h3>
+                    <p class="atributos">Atributos</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>👨‍🚒</span>
+                    </div>
+                    <h3>BOMBERO 5</h3>
+                    <p class="atributos">Atributos</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>👨‍🚒</span>
+                    </div>
+                    <h3>BOMBERO 6</h3>
+                    <p class="atributos">Atributos</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>👨‍🚒</span>
+                    </div>
+                    <h3>BOMBERO 7</h3>
+                    <p class="atributos">Atributos</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>👨‍🚒</span>
+                    </div>
+                    <h3>BOMBERO 8</h3>
+                    <p class="atributos">Atributos</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección nosotros -->
+        <section id="nosotros">
+            <h2>Nosotros</h2>
+            <div class="card">
+                <p>La 2DA COMPAÑÍA DE BOMBEROS es una institución dedicada al servicio de la comunidad. Nuestros voluntarios trabajan día a día para proteger vidas y propiedades.</p>
+                <div class="placeholder-image">
+                    <span>🏢 Cuartel de Bomberos</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección solicitud -->
+        <section id="solicitud">
+            <h2>Solicitud de Ingreso</h2>
+            <form id="formulario-solicitud">
+                <div class="form-group">
+                    <label for="nombre-completo">Nombre Completo:</label>
+                    <input type="text" id="nombre-completo" name="nombre-completo" required>
+                </div>
+                <div class="form-group">
+                    <label for="rut">RUT:</label>
+                    <input type="text" id="rut" name="rut" placeholder="12.345.678-9" required>
+                </div>
+                <div class="form-group">
+                    <label for="edad">Edad:</label>
+                    <input type="number" id="edad" name="edad" min="18" max="65" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="tel" id="telefono" name="telefono" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="motivacion">Motivación para ser bombero:</label>
+                    <textarea id="motivacion" name="motivacion" rows="4" required></textarea>
+                </div>
+                <button type="submit">Enviar Solicitud</button>
+            </form>
+        </section>
+
+        <!-- Sección citaciones -->
+        <section id="citaciones">
+            <h2>Citaciones</h2>
+            <div class="citaciones-list">
+                <div class="citacion-item">
+                    <h3>📋 Detalle Citación 1</h3>
+                    <p><strong>Fecha:</strong> 15 de Septiembre, 2025</p>
+                    <p><strong>Hora:</strong> 19:00 hrs</p>
+                    <p><strong>Motivo:</strong> Reunión mensual ordinaria</p>
+                    <p><strong>Lugar:</strong> Cuartel 2DA Compañía</p>
+                </div>
+                <div class="citacion-item">
+                    <h3>📋 Detalle Citación 2</h3>
+                    <p><strong>Fecha:</strong> 22 de Septiembre, 2025</p>
+                    <p><strong>Hora:</strong> 10:00 hrs</p>
+                    <p><strong>Motivo:</strong> Entrenamiento de rescate</p>
+                    <p><strong>Lugar:</strong> Campo de entrenamiento</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left">
+                <p><strong>Site Name</strong></p>
+                <div class="categories">
+                    <span>Category X |</span>
+                    <span>Category Y |</span>
+                    <span>Category Z</span>
+                </div>
+            </div>
+            <div class="footer-right">
+                <div class="newsletter">
+                    <p>Stay in Touch! Join our Newsletter:</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter Email">
+                        <button>Subscribe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 2DA COMPAÑÍA BOMBEROS - Sistema Web Estudiantil</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
