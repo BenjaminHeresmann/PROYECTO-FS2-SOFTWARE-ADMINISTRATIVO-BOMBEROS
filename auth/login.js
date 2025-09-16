@@ -118,11 +118,11 @@ function redirigirSegunTipo(datosUsuario) {
     if (datosUsuario.tipo === 'administrador') {
         // Redirigir al panel de administrador
         console.log('👑 Redirigiendo al panel de administrador...');
-        window.location.href = 'admin.html';
+        window.location.href = '../admin/admin.html';
     } else {
         // Redirigir al sistema normal de usuarios
         console.log('👨‍🚒 Redirigiendo al sistema de usuarios...');
-        window.location.href = 'index.html';
+        window.location.href = '../users/index.html';
     }
 }
 

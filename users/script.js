@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verificar que el usuario esté autenticado
     if (!verificarAccesoUsuario()) {
         console.log('❌ Acceso denegado - Redirigiendo al login');
-        window.location.href = 'login.html';
+        window.location.href = '../auth/login.html';
         return;
     }
     
@@ -342,7 +342,7 @@ function cerrarSesionUsuario() {
     localStorage.removeItem('bomberosAuth');
     localStorage.removeItem('bomberosUser');
     console.log('� Sesión de usuario cerrada');
-    window.location.href = 'login.html';
+    window.location.href = '../auth/login.html';
 }
 
 // ========================================

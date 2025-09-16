@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verificar acceso administrativo
     if (!verificarAccesoAdmin()) {
         console.log('❌ Acceso denegado - Redirigiendo al login');
-        window.location.href = 'login.html';
+        window.location.href = '../auth/login.html';
         return;
     }
     
@@ -181,7 +181,7 @@ function cerrarSesionAdmin() {
     localStorage.removeItem('bomberosAuth');
     localStorage.removeItem('bomberosUser');
     console.log('🚪 Sesión administrativa cerrada');
-    window.location.href = 'login.html';
+    window.location.href = '../auth/login.html';
 }
 
 // ========================================
