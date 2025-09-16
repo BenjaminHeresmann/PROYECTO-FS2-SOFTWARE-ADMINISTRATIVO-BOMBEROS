@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PANEL ADMINISTRADOR - Sistema Bomberos</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- Encabezado Administrativo -->
+    <header id="adminHeader">
+        <div class="header-container">
+            <div class="logo-section">
+                <img src="./assets/logo-compania-2.png" alt="PANEL ADMINISTRADOR" class="logo">
+                <h1>👑 PANEL ADMINISTRADOR</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/admin" class="nav-link active" data-section="dashboard">📊 Dashboard</a></li>
+                    <li><a href="/admin/bomberos" class="nav-link" data-section="admin-bomberos">🚒 Bomberos</a></li>
+                    <li><a href="/admin/oficiales" class="nav-link" data-section="admin-oficiales">👨‍💼 Oficiales</a></li>
+                    <li><a href="/admin/citaciones" class="nav-link" data-section="admin-citaciones">📅 Citaciones</a></li>
+                    <li><a href="/admin/usuarios" class="nav-link" data-section="admin-usuarios">👥 Usuarios</a></li>
+                    <li><a href="/admin/permisos" class="nav-link" data-section="admin-permisos">🔑 Permisos</a></li>
+                </ul>
+            </nav>
+            <div class="user-info-section">
+                <span id="adminInfo" class="user-info">👑 Administrador</span>
+                <button id="adminLogoutBtn" class="btn-logout">🚪 Cerrar Sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal del administrador -->
+    <main id="adminContent">
+        
+        <!-- Sección Dashboard -->
+        <section id="dashboard" class="admin-section">
+            <h2>📊 Panel de Control Administrativo</h2>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3>👨‍🚒 Bomberos Registrados</h3>
+                    <p class="stat-number" id="totalBomberos">8</p>
+                </div>
+                <div class="stat-card">
+                    <h3>👨‍💼 Oficiales Activos</h3>
+                    <p class="stat-number" id="totalOficiales">8</p>
+                </div>
+                <div class="stat-card">
+                    <h3>📅 Citaciones Programadas</h3>
+                    <p class="stat-number" id="totalCitaciones">2</p>
+                </div>
+                <div class="stat-card">
+                    <h3>👥 Usuarios del Sistema</h3>
+                    <p class="stat-number" id="totalUsuarios">5</p>
+                </div>
+            </div>
+            <div class="dashboard-actions">
+                <h3>⚡ Acciones Rápidas</h3>
+                <button class="btn-admin-action" onclick="navegarA('/admin/bomberos')">➕ Nuevo Bombero</button>
+                <button class="btn-admin-action" onclick="navegarA('/admin/citaciones')">📅 Nueva Citación</button>
+                <button class="btn-admin-action" onclick="navegarA('/admin/usuarios')">👤 Nuevo Usuario</button>
+                <button class="btn-admin-action" onclick="navegarA('/admin/permisos')">🔑 Gestionar Permisos</button>
+            </div>
+        </section>
+
+        <!-- Sección Administrar Bomberos -->
+        <section id="admin-bomberos" class="admin-section">
+            <h2>🚒 Administrar Bomberos</h2>
+            <div class="admin-actions">
+                <button class="btn-primary" onclick="mostrarFormulario('nuevo-bombero')">➕ Nuevo Bombero</button>
+                <button class="btn-secondary" onclick="cargarListaBomberos()">🔄 Actualizar Lista</button>
+            </div>
+            
+            <!-- Tabla de bomberos -->
+            <div class="admin-table-container">
+                <table class="admin-table" id="tablaBomberos">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Rango</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaBomberos">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Formulario para nuevo/editar bombero -->
+            <div id="form-bombero" class="admin-form-container" style="display: none;">
+                <h3 id="titulo-form-bombero">➕ Nuevo Bombero</h3>
+                <form id="formulario-bombero">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre-bombero">Nombre Completo:</label>
+                            <input type="text" id="nombre-bombero" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rango-bombero">Rango:</label>
+                            <select id="rango-bombero" required>
+                                <option value="">Seleccionar rango</option>
+                                <option value="Bombero">Bombero</option>
+                                <option value="Cabo">Cabo</option>
+                                <option value="Sargento">Sargento</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="especialidad-bombero">Especialidad:</label>
+                            <input type="text" id="especialidad-bombero" placeholder="Ej: Rescate, Emergencias médicas">
+                        </div>
+                        <div class="form-group">
+                            <label for="estado-bombero">Estado:</label>
+                            <select id="estado-bombero" required>
+                                <option value="Activo">Activo</option>
+                                <option value="Licencia">Licencia</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">💾 Guardar</button>
+                        <button type="button" class="btn-secondary" onclick="ocultarFormulario('form-bombero')">❌ Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Sección Administrar Oficiales -->
+        <section id="admin-oficiales" class="admin-section">
+            <h2>👨‍💼 Administrar Oficiales</h2>
+            <div class="admin-actions">
+                <button class="btn-primary" onclick="mostrarFormulario('nuevo-oficial')">➕ Nuevo Oficial</button>
+                <button class="btn-secondary" onclick="cargarListaOficiales()">🔄 Actualizar Lista</button>
+            </div>
+            
+            <!-- Tabla de oficiales -->
+            <div class="admin-table-container">
+                <table class="admin-table" id="tablaOficiales">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Cargo</th>
+                            <th>Responsabilidad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaOficiales">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Formulario para nuevo/editar oficial -->
+            <div id="form-oficial" class="admin-form-container" style="display: none;">
+                <h3 id="titulo-form-oficial">➕ Nuevo Oficial</h3>
+                <form id="formulario-oficial">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre-oficial">Nombre Completo:</label>
+                            <input type="text" id="nombre-oficial" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cargo-oficial">Cargo:</label>
+                            <select id="cargo-oficial" required>
+                                <option value="">Seleccionar cargo</option>
+                                <option value="Director">Director</option>
+                                <option value="Secretario">Secretario</option>
+                                <option value="Tesorero">Tesorero</option>
+                                <option value="Capitán">Capitán</option>
+                                <option value="Teniente Primero">Teniente Primero</option>
+                                <option value="Teniente Segundo">Teniente Segundo</option>
+                                <option value="Teniente Tercero">Teniente Tercero</option>
+                                <option value="Ayudante">Ayudante</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="responsabilidad-oficial">Responsabilidad:</label>
+                        <input type="text" id="responsabilidad-oficial" placeholder="Ej: Comando operativo superior">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">💾 Guardar</button>
+                        <button type="button" class="btn-secondary" onclick="ocultarFormulario('form-oficial')">❌ Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Sección Administrar Citaciones -->
+        <section id="admin-citaciones" class="admin-section">
+            <h2>📅 Administrar Citaciones</h2>
+            <div class="admin-actions">
+                <button class="btn-primary" onclick="mostrarFormulario('nueva-citacion')">➕ Nueva Citación</button>
+                <button class="btn-secondary" onclick="cargarListaCitaciones()">🔄 Actualizar Lista</button>
+            </div>
+            
+            <!-- Lista de citaciones -->
+            <div id="listaCitacionesAdmin" class="citaciones-admin-list">
+                <!-- Se llena dinámicamente -->
+            </div>
+
+            <!-- Formulario para nueva/editar citación -->
+            <div id="form-citacion" class="admin-form-container" style="display: none;">
+                <h3 id="titulo-form-citacion">➕ Nueva Citación</h3>
+                <form id="formulario-citacion">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="titulo-citacion">Título de la Citación:</label>
+                            <input type="text" id="titulo-citacion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha-citacion">Fecha:</label>
+                            <input type="date" id="fecha-citacion" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="hora-citacion">Hora:</label>
+                            <input type="time" id="hora-citacion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lugar-citacion">Lugar:</label>
+                            <input type="text" id="lugar-citacion" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="motivo-citacion">Motivo:</label>
+                        <textarea id="motivo-citacion" rows="3" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">💾 Guardar</button>
+                        <button type="button" class="btn-secondary" onclick="ocultarFormulario('form-citacion')">❌ Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Sección Administrar Usuarios -->
+        <section id="admin-usuarios" class="admin-section">
+            <h2>👥 Administrar Usuarios del Sistema</h2>
+            <div class="admin-actions">
+                <button class="btn-primary" onclick="mostrarFormulario('nuevo-usuario')">➕ Nuevo Usuario</button>
+                <button class="btn-secondary" onclick="cargarListaUsuarios()">🔄 Actualizar Lista</button>
+            </div>
+            
+            <!-- Tabla de usuarios -->
+            <div class="admin-table-container">
+                <table class="admin-table" id="tablaUsuarios">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Nombre</th>
+                            <th>Rol</th>
+                            <th>Permisos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaUsuarios">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Formulario para nuevo/editar usuario -->
+            <div id="form-usuario" class="admin-form-container" style="display: none;">
+                <h3 id="titulo-form-usuario">➕ Nuevo Usuario</h3>
+                <form id="formulario-usuario">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email-usuario">Email/Usuario:</label>
+                            <input type="email" id="email-usuario" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password-usuario">Contraseña:</label>
+                            <input type="password" id="password-usuario" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre-usuario">Nombre Completo:</label>
+                            <input type="text" id="nombre-usuario" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rol-usuario">Rol:</label>
+                            <select id="rol-usuario" required>
+                                <option value="">Seleccionar rol</option>
+                                <option value="Bombero">Bombero</option>
+                                <option value="Sargento">Sargento</option>
+                                <option value="Teniente">Teniente</option>
+                                <option value="Capitán">Capitán</option>
+                                <option value="Comandante">Comandante</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">💾 Guardar</button>
+                        <button type="button" class="btn-secondary" onclick="ocultarFormulario('form-usuario')">❌ Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Sección Gestión de Permisos -->
+        <section id="admin-permisos" class="admin-section">
+            <h2>🔑 Gestión de Permisos y Privilegios</h2>
+            <div class="permisos-info">
+                <p>Esta sección permite al administrador asignar permisos específicos a usuarios del sistema.</p>
+            </div>
+            
+            <!-- Selector de usuario para permisos -->
+            <div class="permisos-selector">
+                <h3>Seleccionar Usuario:</h3>
+                <select id="usuario-permisos" onchange="cargarPermisosUsuario()">
+                    <option value="">-- Seleccionar usuario --</option>
+                </select>
+            </div>
+
+            <!-- Panel de permisos -->
+            <div id="panel-permisos" class="permisos-panel" style="display: none;">
+                <h3>Permisos para: <span id="nombre-usuario-permisos"></span></h3>
+                <div class="permisos-grid">
+                    <div class="permiso-item">
+                        <label>
+                            <input type="checkbox" value="bomberos" class="permiso-checkbox">
+                            🚒 Gestión de Bomberos
+                        </label>
+                    </div>
+                    <div class="permiso-item">
+                        <label>
+                            <input type="checkbox" value="oficiales" class="permiso-checkbox">
+                            👨‍💼 Gestión de Oficiales
+                        </label>
+                    </div>
+                    <div class="permiso-item">
+                        <label>
+                            <input type="checkbox" value="citaciones" class="permiso-checkbox">
+                            📅 Gestión de Citaciones
+                        </label>
+                    </div>
+                    <div class="permiso-item">
+                        <label>
+                            <input type="checkbox" value="solicitudes" class="permiso-checkbox">
+                            📋 Gestión de Solicitudes
+                        </label>
+                    </div>
+                </div>
+                <div class="permisos-actions">
+                    <button class="btn-primary" onclick="guardarPermisos()">💾 Guardar Permisos</button>
+                    <button class="btn-secondary" onclick="cancelarPermisos()">❌ Cancelar</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <p><strong>👑 PANEL ADMINISTRADOR - SISTEMA BOMBEROS</strong></p>
+                <p>Herramientas de Gestión y Administración Avanzada</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 SEGUNDA COMPAÑÍA DE BOMBEROS VIÑA DEL MAR - Panel Administrativo</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript del panel admin -->
+    <script src="admin.js"></script>
+</body>
+</html>

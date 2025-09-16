@@ -118,22 +118,29 @@ class SimpleRouter {
 }
 
 // ========================================
-// INICIALIZAR APLICACIÓN
+// INICIALIZAR APLICACIÓN - SISTEMA DE USUARIOS
 // ========================================
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚒 Sistema de Bomberos con Login cargado correctamente!');
+    console.log('🚒 Sistema de Bomberos para Usuarios cargado correctamente!');
     
-    // Verificar estado de autenticación al cargar
-    verificarEstadoInicial();
-    
-    // Configurar sistema de login
-    configurarLogin();
-    
-    // Inicializar router solo si está autenticado
-    let router;
-    if (sistemaAutenticado) {
-        router = new SimpleRouter();
+    // Verificar que el usuario esté autenticado
+    if (!verificarAccesoUsuario()) {
+        console.log('❌ Acceso denegado - Redirigiendo al login');
+        window.location.href = 'login.html';
+        return;
     }
+    
+    // Mostrar información del usuario
+    mostrarInfoUsuario();
+    
+    // Configurar botón de logout
+    configurarLogout();
+    
+    // Asegurar que el contenido esté visible
+    mostrarContenidoPrincipal();
+    
+    // Inicializar router para usuarios
+    const router = new SimpleRouter();
     
     // ========================================
     // SISTEMA DE SOLICITUDES
@@ -256,131 +263,89 @@ function getTipoSolicitudTexto(valor) {
 }
 
 // ========================================
-// SISTEMA DE AUTENTICACIÓN - FUNCIONES
+// SISTEMA DE AUTENTICACIÓN PARA USUARIOS
 // ========================================
 
-// 🔍 FUNCIÓN: Verificar estado inicial al cargar página
-function verificarEstadoInicial() {
-    // Comprobar si hay sesión guardada
-    const sesionGuardada = localStorage.getItem('bomberosAuth');
-    const usuarioGuardado = localStorage.getItem('bomberosUser');
+// 🔍 FUNCIÓN: Verificar acceso de usuario (no administrador)
+function verificarAccesoUsuario() {
+    const sesion = localStorage.getItem('bomberosAuth');
+    const usuario = localStorage.getItem('bomberosUser');
     
-    if (sesionGuardada === 'true' && usuarioGuardado) {
-        sistemaAutenticado = true;
-        mostrarSistemaPrincipal();
-        mostrarInfoUsuario(JSON.parse(usuarioGuardado));
+    console.log('🔍 Verificando acceso usuario:', { sesion, usuario });
+    
+    if (sesion === 'true' && usuario) {
+        const datosUsuario = JSON.parse(usuario);
+        console.log('👤 Datos usuario:', datosUsuario);
+        
+        // Verificar que NO sea administrador (los admin van a admin.html)
+        if (datosUsuario.tipo !== 'administrador') {
+            console.log('✅ Acceso concedido - Usuario normal');
+            sistemaAutenticado = true;
+            return true;
+        } else {
+            console.log('❌ Usuario es administrador - debe ir a admin.html');
+        }
     } else {
-        sistemaAutenticado = false;
-        mostrarPaginaLogin();
+        console.log('❌ No hay sesión válida');
+    }
+    
+    return false;
+}
+
+// 🎨 FUNCIÓN: Mostrar el contenido principal
+function mostrarContenidoPrincipal() {
+    const main = document.querySelector('main');
+    if (main) {
+        main.style.display = 'block';
+        main.style.visibility = 'visible';
+        console.log('✅ Contenido principal mostrado');
+    }
+    
+    // También asegurar que las secciones estén configuradas
+    const secciones = document.querySelectorAll('.seccion');
+    secciones.forEach(seccion => {
+        seccion.style.display = 'none'; // Ocultar todas por defecto
+    });
+    
+    // Mostrar la sección dashboard por defecto
+    const dashboard = document.getElementById('dashboard');
+    if (dashboard) {
+        dashboard.style.display = 'block';
+        console.log('✅ Dashboard mostrado por defecto');
     }
 }
 
-// 🔐 FUNCIÓN: Configurar formulario de login
-function configurarLogin() {
-    const loginForm = document.getElementById('loginForm');
-    const logoutBtn = document.getElementById('logoutBtn');
-    
-    // Evento del formulario de login
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            if (validarCredenciales(email, password)) {
-                const usuario = USUARIOS_BOMBEROS[email];
-                
-                // Guardar sesión
-                localStorage.setItem('bomberosAuth', 'true');
-                localStorage.setItem('bomberosUser', JSON.stringify({
-                    email: email,
-                    nombre: usuario.nombre,
-                    rol: usuario.rol
-                }));
-                
-                // Actualizar estado
-                sistemaAutenticado = true;
-                
-                // Mostrar sistema principal
-                mostrarSistemaPrincipal();
-                mostrarInfoUsuario(usuario);
-                
-                // Inicializar router
-                const router = new SimpleRouter();
-                
-                console.log('🚒 ¡Login exitoso! Usuario:', usuario.nombre);
-                
-            } else {
-                mostrarErrorLogin('❌ Credenciales incorrectas. Verifique su email y contraseña.');
-            }
-        });
+// 👤 FUNCIÓN: Mostrar información del usuario actual
+function mostrarInfoUsuario() {
+    const usuario = localStorage.getItem('bomberosUser');
+    if (usuario) {
+        const datosUsuario = JSON.parse(usuario);
+        const userInfo = document.getElementById('userInfo');
+        if (userInfo) {
+            userInfo.textContent = `👋 ${datosUsuario.nombre} (${datosUsuario.rol})`;
+        }
     }
-    
-    // Evento del botón cerrar sesión
+}
+
+// ⚙️ FUNCIÓN: Configurar botón de logout
+function configurarLogout() {
+    const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function() {
-            cerrarSesion();
+            cerrarSesionUsuario();
         });
     }
 }
 
-// ✅ FUNCIÓN: Validar credenciales de usuario
-function validarCredenciales(email, password) {
-    const usuario = USUARIOS_BOMBEROS[email];
-    return usuario && usuario.password === password;
-}
-
-// 📱 FUNCIÓN: Mostrar página de login
-function mostrarPaginaLogin() {
-    document.getElementById('loginPage').style.display = 'flex';
-    document.getElementById('mainHeader').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'none';
-}
-
-// 🏠 FUNCIÓN: Mostrar sistema principal
-function mostrarSistemaPrincipal() {
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('mainHeader').style.display = 'block';
-    document.getElementById('mainContent').style.display = 'block';
-}
-
-// 👤 FUNCIÓN: Mostrar información del usuario
-function mostrarInfoUsuario(usuario) {
-    const userInfo = document.getElementById('userInfo');
-    if (userInfo) {
-        userInfo.textContent = `👋 ${usuario.nombre} (${usuario.rol})`;
-    }
-}
-
-// ❌ FUNCIÓN: Mostrar error de login
-function mostrarErrorLogin(mensaje) {
-    const errorDiv = document.getElementById('loginError');
-    if (errorDiv) {
-        errorDiv.textContent = mensaje;
-        errorDiv.style.display = 'block';
-        
-        // Ocultar después de 4 segundos
-        setTimeout(() => {
-            errorDiv.style.display = 'none';
-        }, 4000);
-    }
-}
-
-// 🚪 FUNCIÓN: Cerrar sesión
-function cerrarSesion() {
-    // Limpiar almacenamiento
+// 🚪 FUNCIÓN: Cerrar sesión y volver al login
+function cerrarSesionUsuario() {
     localStorage.removeItem('bomberosAuth');
     localStorage.removeItem('bomberosUser');
-    
-    // Actualizar estado
-    sistemaAutenticado = false;
-    
-    // Mostrar login
-    mostrarPaginaLogin();
-    
-    // Limpiar formulario
-    document.getElementById('loginForm').reset();
-    
-    console.log('🚪 Sesión cerrada correctamente');
+    console.log('� Sesión de usuario cerrada');
+    window.location.href = 'login.html';
 }
+
+// ========================================
+// RESTO DE FUNCIONES DEL SISTEMA DE USUARIOS
+// (Las funciones de login ahora están en login.js)
+// ========================================
