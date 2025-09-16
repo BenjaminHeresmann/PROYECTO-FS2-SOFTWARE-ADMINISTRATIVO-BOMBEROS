@@ -190,6 +190,9 @@ function cerrarSesionAdmin() {
 
 // 🗄️ FUNCIÓN: Inicializar datos simulados de base
 function inicializarDatosBase() {
+    // NOTA: Para refrescar los datos y añadir nuevos bomberos,
+    // abrir la consola del navegador y ejecutar: localStorage.clear(); location.reload();
+    
     // Datos base para bomberos
     if (!localStorage.getItem('bomberosData')) {
         const bomberosBase = [
@@ -200,7 +203,8 @@ function inicializarDatosBase() {
             { id: 5, nombre: 'Pedro Martínez', rango: 'Cabo', especialidad: 'Materiales peligrosos', estado: 'Licencia' },
             { id: 6, nombre: 'Laura Sánchez', rango: 'Bombero', especialidad: 'Rescate urbano', estado: 'Activo' },
             { id: 7, nombre: 'Diego Torres', rango: 'Sargento', especialidad: 'Comandante de unidad', estado: 'Activo' },
-            { id: 8, nombre: 'Patricia Ramírez', rango: 'Bombero', especialidad: 'Primeros auxilios', estado: 'Activo' }
+            { id: 8, nombre: 'Patricia Ramírez', rango: 'Bombero', especialidad: 'Primeros auxilios', estado: 'Activo' },
+            { id: 9, nombre: 'Pedro Sánchez', rango: 'Bombero', especialidad: 'Rescate general', estado: 'Activo', email: 'bombero@bomberos.cl' }
         ];
         localStorage.setItem('bomberosData', JSON.stringify(bomberosBase));
     }
@@ -289,6 +293,11 @@ function mostrarFormulario(tipo) {
         // Limpiar formulario si es nuevo
         if (!modoEdicion) {
             form.querySelector('form').reset();
+        }
+        
+        // Si es formulario de citación, cargar lista de bomberos
+        if (tipo === 'nueva-citacion') {
+            cargarBomberosParaCitacion();
         }
     }
 }
@@ -438,12 +447,33 @@ function cargarListaCitaciones() {
     citaciones.forEach(citacion => {
         const div = document.createElement('div');
         div.className = 'citacion-admin-item';
+        
+        // Generar lista de bomberos citados
+        let bomberosHtml = '';
+        if (citacion.bomberosCitados && citacion.bomberosCitados.length > 0) {
+            bomberosHtml = `
+                <div class="bomberos-citados">
+                    <strong>👥 Bomberos Citados:</strong>
+                    <div class="bomberos-list">
+                        ${citacion.bomberosCitados.map(bombero => {
+                            const emailInfo = bombero.email ? ` title="📧 ${bombero.email}"` : '';
+                            return `<span class="bombero-tag"${emailInfo}>${bombero.nombre} (${bombero.rango})</span>`;
+                        }).join('')}
+                    </div>
+                    <small class="bomberos-count">${citacion.bomberosCitados.length} bombero(s) citado(s)</small>
+                </div>
+            `;
+        } else {
+            bomberosHtml = '<div class="bomberos-citados"><span class="no-bomberos">⚠️ Sin bomberos asignados</span></div>';
+        }
+        
         div.innerHTML = `
             <h4>${citacion.titulo}</h4>
             <p><strong>📅 Fecha:</strong> ${formatearFecha(citacion.fecha)}</p>
             <p><strong>🕐 Hora:</strong> ${citacion.hora}</p>
             <p><strong>📍 Lugar:</strong> ${citacion.lugar}</p>
             <p><strong>📝 Motivo:</strong> ${citacion.motivo}</p>
+            ${bomberosHtml}
             <div class="citacion-actions">
                 <button class="btn-small btn-edit" onclick="editarCitacion(${citacion.id})">✏️ Editar</button>
                 <button class="btn-small btn-delete" onclick="eliminarCitacion(${citacion.id})">🗑️ Eliminar</button>
@@ -470,6 +500,18 @@ function editarCitacion(id) {
         modoEdicion = true;
         itemEditando = id;
         mostrarFormulario('nueva-citacion');
+        
+        // Esperar a que se cargue la lista de bomberos y luego marcar los seleccionados
+        setTimeout(() => {
+            if (citacion.bomberosCitados) {
+                citacion.bomberosCitados.forEach(bombero => {
+                    const checkbox = document.getElementById(`bombero-${bombero.id}`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+        }, 100);
     }
 }
 
@@ -484,6 +526,83 @@ function eliminarCitacion(id) {
         console.log('🗑️ Citación eliminada');
     }
 }
+
+// 👥 FUNCIÓN: Cargar bomberos para citación
+function cargarBomberosParaCitacion() {
+    const bomberos = JSON.parse(localStorage.getItem('bomberosData')) || [];
+    const container = document.getElementById('lista-bomberos-citacion');
+    
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (bomberos.length === 0) {
+        container.innerHTML = '<p class="no-bomberos">No hay bomberos registrados en el sistema.</p>';
+        return;
+    }
+    
+    bomberos.forEach(bombero => {
+        const div = document.createElement('div');
+        div.className = 'bombero-checkbox-item';
+        
+        // Construir información adicional del bombero
+        let infoAdicional = `
+            <span class="bombero-rango">${bombero.rango}</span>
+            <span class="bombero-especialidad">${bombero.especialidad}</span>
+        `;
+        
+        // Añadir email si está disponible
+        if (bombero.email) {
+            infoAdicional += `<span class="bombero-email">📧 ${bombero.email}</span>`;
+        }
+        
+        div.innerHTML = `
+            <label class="checkbox-label">
+                <input type="checkbox" 
+                       name="bomberos-seleccionados" 
+                       value="${bombero.id}" 
+                       id="bombero-${bombero.id}">
+                <span class="checkmark"></span>
+                <div class="bombero-info">
+                    <strong>${bombero.nombre}</strong>
+                    ${infoAdicional}
+                </div>
+            </label>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// ✅❌ FUNCIÓN: Seleccionar/Deseleccionar todos los bomberos
+function seleccionarTodosBomberos(seleccionar) {
+    const checkboxes = document.querySelectorAll('input[name="bomberos-seleccionados"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = seleccionar;
+    });
+}
+
+// 🔄 FUNCIÓN: Actualizar datos base (para desarrollo)
+function actualizarDatosBase() {
+    // Eliminar solo los datos base para regenerarlos
+    localStorage.removeItem('bomberosData');
+    localStorage.removeItem('oficialesData');
+    localStorage.removeItem('citacionesData');
+    
+    // Reinicializar
+    inicializarDatosBase();
+    
+    // Recargar las listas actuales
+    if (typeof cargarListaBomberos === 'function') cargarListaBomberos();
+    if (typeof cargarListaOficiales === 'function') cargarListaOficiales();
+    if (typeof cargarListaCitaciones === 'function') cargarListaCitaciones();
+    if (typeof actualizarEstadisticas === 'function') actualizarEstadisticas();
+    
+    console.log('✅ Datos base actualizados correctamente');
+    alert('✅ Datos base actualizados. Pedro Sánchez ha sido añadido al sistema.');
+}
+
+// Función disponible globalmente para facilidad de uso en consola
+window.actualizarDatosBase = actualizarDatosBase;
 
 // ========================================
 // GESTIÓN DE USUARIOS
@@ -695,16 +814,65 @@ function guardarCitacion() {
     const lugar = document.getElementById('lugar-citacion').value;
     const motivo = document.getElementById('motivo-citacion').value;
     
+    // Obtener bomberos seleccionados
+    const bomberosSeleccionados = [];
+    const checkboxes = document.querySelectorAll('input[name="bomberos-seleccionados"]:checked');
+    const bomberos = JSON.parse(localStorage.getItem('bomberosData')) || [];
+    
+    checkboxes.forEach(checkbox => {
+        const bomberoId = parseInt(checkbox.value);
+        const bombero = bomberos.find(b => b.id === bomberoId);
+        if (bombero) {
+            const bomberoData = {
+                id: bombero.id,
+                nombre: bombero.nombre,
+                rango: bombero.rango,
+                especialidad: bombero.especialidad
+            };
+            
+            // Añadir email si está disponible
+            if (bombero.email) {
+                bomberoData.email = bombero.email;
+            }
+            
+            bomberosSeleccionados.push(bomberoData);
+        }
+    });
+    
+    // Validar que se haya seleccionado al menos un bombero
+    if (bomberosSeleccionados.length === 0) {
+        alert('⚠️ Debe seleccionar al menos un bombero para la citación.');
+        return;
+    }
+    
     let citaciones = JSON.parse(localStorage.getItem('citacionesData')) || [];
     
     if (modoEdicion) {
         const index = citaciones.findIndex(c => c.id === itemEditando);
         if (index !== -1) {
-            citaciones[index] = { id: itemEditando, titulo, fecha, hora, lugar, motivo };
+            citaciones[index] = { 
+                id: itemEditando, 
+                titulo, 
+                fecha, 
+                hora, 
+                lugar, 
+                motivo, 
+                bomberosCitados: bomberosSeleccionados,
+                fechaCreacion: citaciones[index].fechaCreacion || new Date().toISOString()
+            };
         }
     } else {
         const nuevoId = Math.max(...citaciones.map(c => c.id), 0) + 1;
-        citaciones.push({ id: nuevoId, titulo, fecha, hora, lugar, motivo });
+        citaciones.push({ 
+            id: nuevoId, 
+            titulo, 
+            fecha, 
+            hora, 
+            lugar, 
+            motivo, 
+            bomberosCitados: bomberosSeleccionados,
+            fechaCreacion: new Date().toISOString()
+        });
     }
     
     localStorage.setItem('citacionesData', JSON.stringify(citaciones));
@@ -713,6 +881,7 @@ function guardarCitacion() {
     ocultarFormulario('form-citacion');
     
     console.log(modoEdicion ? '✏️ Citación actualizada' : '➕ Nueva citación creada');
+    console.log(`👥 Bomberos citados: ${bomberosSeleccionados.length}`);
 }
 
 // 💾 FUNCIÓN: Guardar usuario

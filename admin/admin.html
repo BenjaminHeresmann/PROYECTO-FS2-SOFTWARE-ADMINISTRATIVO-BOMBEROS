@@ -235,6 +235,21 @@
                         <label for="motivo-citacion">Motivo:</label>
                         <textarea id="motivo-citacion" rows="3" required></textarea>
                     </div>
+                    
+                    <!-- Sección de selección de bomberos -->
+                    <div class="form-group">
+                        <label for="bomberos-citacion">Bomberos a Citar:</label>
+                        <div class="bomberos-selection-container">
+                            <div class="selection-actions">
+                                <button type="button" class="btn-small" onclick="seleccionarTodosBomberos(true)">✅ Seleccionar Todos</button>
+                                <button type="button" class="btn-small" onclick="seleccionarTodosBomberos(false)">❌ Deseleccionar Todos</button>
+                            </div>
+                            <div id="lista-bomberos-citacion" class="bomberos-checklist">
+                                <!-- Se llenará dinámicamente con la lista de bomberos -->
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">💾 Guardar</button>
                         <button type="button" class="btn-secondary" onclick="ocultarFormulario('form-citacion')">❌ Cancelar</button>
