@@ -99,6 +99,11 @@ class SimpleRouter {
                 behavior: 'smooth',
                 block: 'start'
             });
+            
+            // Cargar contenido específico según la sección
+            if (seccionId === 'citaciones') {
+                cargarCitacionesUsuario();
+            }
         }
     }
     
@@ -141,6 +146,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar router para usuarios
     const router = new SimpleRouter();
+    
+    // Cargar citaciones si se inicia directamente en esa sección
+    if (window.location.pathname === '/citaciones') {
+        setTimeout(() => cargarCitacionesUsuario(), 500);
+    }
     
     // ========================================
     // SISTEMA DE SOLICITUDES
@@ -343,6 +353,167 @@ function cerrarSesionUsuario() {
     localStorage.removeItem('bomberosUser');
     console.log('� Sesión de usuario cerrada');
     window.location.href = '../auth/login.html';
+}
+
+// ========================================
+// SISTEMA DE CITACIONES PARA USUARIOS
+// ========================================
+
+// 📅 FUNCIÓN: Cargar citaciones donde el usuario fue citado
+function cargarCitacionesUsuario() {
+    const usuario = localStorage.getItem('bomberosUser');
+    if (!usuario) {
+        console.log('❌ No hay usuario logueado');
+        return;
+    }
+    
+    const datosUsuario = JSON.parse(usuario);
+    const citaciones = JSON.parse(localStorage.getItem('citacionesData')) || [];
+    const container = document.getElementById('citacionesUsuario');
+    
+    if (!container) {
+        console.log('❌ No se encontró el contenedor de citaciones');
+        return;
+    }
+    
+    console.log('🔍 Buscando citaciones para:', datosUsuario.nombre);
+    console.log('📋 Total citaciones en sistema:', citaciones.length);
+    
+    // Filtrar citaciones donde el usuario fue citado
+    const citacionesUsuario = citaciones.filter(citacion => {
+        if (!citacion.bomberosCitados || citacion.bomberosCitados.length === 0) {
+            return false;
+        }
+        
+        console.log('🔍 Revisando citación:', citacion.titulo);
+        console.log('📋 Bomberos citados:', citacion.bomberosCitados);
+        
+        // Buscar por nombre o email
+        return citacion.bomberosCitados.some(bombero => {
+            const coincideNombre = bombero.nombre && bombero.nombre.toLowerCase().includes(datosUsuario.nombre.toLowerCase());
+            const coincideEmail = bombero.email && datosUsuario.email && bombero.email.toLowerCase() === datosUsuario.email.toLowerCase();
+            
+            console.log(`🔍 Comparando: "${bombero.nombre}" vs "${datosUsuario.nombre}" | "${bombero.email}" vs "${datosUsuario.email}"`);
+            console.log(`✅ Coincide nombre: ${coincideNombre} | Coincide email: ${coincideEmail}`);
+            
+            return coincideNombre || coincideEmail;
+        });
+    });
+    
+    console.log('✅ Citaciones encontradas para el usuario:', citacionesUsuario.length);
+    
+    // Limpiar contenedor
+    container.innerHTML = '';
+    
+    if (citacionesUsuario.length === 0) {
+        container.innerHTML = `
+            <div class="no-citaciones">
+                <div class="no-citaciones-content">
+                    <h3>📭 Sin citaciones</h3>
+                    <p>No tienes citaciones pendientes en este momento.</p>
+                    <small>Las citaciones aparecerán aquí cuando seas convocado a reuniones o actividades.</small>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Ordenar citaciones por fecha (más recientes primero)
+    citacionesUsuario.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    
+    // Mostrar citaciones
+    citacionesUsuario.forEach(citacion => {
+        const citacionElement = document.createElement('div');
+        citacionElement.className = 'citacion-item';
+        
+        // Determinar si la citación es futura, presente o pasada
+        const fechaCitacion = new Date(citacion.fecha);
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        fechaCitacion.setHours(0, 0, 0, 0);
+        
+        let estadoClass = '';
+        let estadoIcon = '';
+        
+        if (fechaCitacion > hoy) {
+            estadoClass = 'citacion-futura';
+            estadoIcon = '🔜';
+        } else if (fechaCitacion.getTime() === hoy.getTime()) {
+            estadoClass = 'citacion-hoy';
+            estadoIcon = '📅';
+        } else {
+            estadoClass = 'citacion-pasada';
+            estadoIcon = '✅';
+        }
+        
+        citacionElement.classList.add(estadoClass);
+        
+        citacionElement.innerHTML = `
+            <div class="citacion-header">
+                <h3>${estadoIcon} ${citacion.titulo}</h3>
+                <span class="citacion-estado ${estadoClass}">${obtenerEstadoCitacion(fechaCitacion, hoy)}</span>
+            </div>
+            <div class="citacion-detalles">
+                <p><strong>📅 Fecha:</strong> ${formatearFechaUsuario(citacion.fecha)}</p>
+                <p><strong>🕐 Hora:</strong> ${citacion.hora}</p>
+                <p><strong>📍 Lugar:</strong> ${citacion.lugar}</p>
+                <p><strong>📝 Motivo:</strong> ${citacion.motivo}</p>
+                <div class="citacion-bomberos">
+                    <small><strong>👥 Otros convocados:</strong> ${obtenerOtrosBomberos(citacion.bomberosCitados, datosUsuario.nombre)}</small>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(citacionElement);
+    });
+}
+
+// 🎯 FUNCIÓN: Obtener estado de la citación
+function obtenerEstadoCitacion(fechaCitacion, hoy) {
+    if (fechaCitacion > hoy) {
+        return 'Próxima';
+    } else if (fechaCitacion.getTime() === hoy.getTime()) {
+        return 'HOY';
+    } else {
+        return 'Realizada';
+    }
+}
+
+// 📅 FUNCIÓN: Formatear fecha para usuarios
+function formatearFechaUsuario(fecha) {
+    const opciones = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    return new Date(fecha).toLocaleDateString('es-ES', opciones);
+}
+
+// 👥 FUNCIÓN: Obtener otros bomberos citados (excluyendo al usuario actual)
+function obtenerOtrosBomberos(bomberosCitados, nombreUsuario) {
+    const otrosBomberos = bomberosCitados.filter(bombero => 
+        !bombero.nombre.toLowerCase().includes(nombreUsuario.toLowerCase())
+    );
+    
+    if (otrosBomberos.length === 0) {
+        return 'Solo tú has sido citado';
+    }
+    
+    const nombres = otrosBomberos.map(bombero => bombero.nombre).slice(0, 3);
+    let resultado = nombres.join(', ');
+    
+    if (otrosBomberos.length > 3) {
+        resultado += ` y ${otrosBomberos.length - 3} más`;
+    }
+    
+    return resultado;
+}
+
+// 📅 FUNCIÓN: Formatear fecha (auxiliar)
+function formatearFecha(fecha) {
+    const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(fecha).toLocaleDateString('es-ES', opciones);
 }
 
 // ========================================

@@ -104,6 +104,7 @@ function guardarSesion(usuario, datosUsuario) {
     localStorage.setItem('bomberosAuth', 'true');
     localStorage.setItem('bomberosUser', JSON.stringify({
         usuario: usuario,
+        email: usuario, // Agregar email para facilitar comparaciones
         nombre: datosUsuario.nombre,
         rol: datosUsuario.rol,
         tipo: datosUsuario.tipo,

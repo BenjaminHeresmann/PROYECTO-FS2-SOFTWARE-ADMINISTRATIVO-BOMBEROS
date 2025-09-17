@@ -213,21 +213,14 @@
 
         <!-- Sección citaciones -->
         <section id="citaciones">
-            <h2>Citaciones</h2>
-            <div class="citaciones-list">
-                <div class="citacion-item">
-                    <h3>📋 Detalle Citación 1</h3>
-                    <p><strong>Fecha:</strong> 15 de Septiembre, 2025</p>
-                    <p><strong>Hora:</strong> 19:00 hrs</p>
-                    <p><strong>Motivo:</strong> Reunión mensual ordinaria</p>
-                    <p><strong>Lugar:</strong> Cuartel Segunda Compañía</p>
-                </div>
-                <div class="citacion-item">
-                    <h3>📋 Detalle Citación 2</h3>
-                    <p><strong>Fecha:</strong> 22 de Septiembre, 2025</p>
-                    <p><strong>Hora:</strong> 10:00 hrs</p>
-                    <p><strong>Motivo:</strong> Entrenamiento de rescate</p>
-                    <p><strong>Lugar:</strong> Campo de entrenamiento</p>
+            <h2>📅 Mis Citaciones</h2>
+            <div class="citaciones-info">
+                <p class="info-text">� Aquí aparecen las citaciones donde has sido convocado</p>
+            </div>
+            <div class="citaciones-list" id="citacionesUsuario">
+                <!-- Las citaciones se cargan dinámicamente aquí -->
+                <div class="loading-message">
+                    <p>⏳ Cargando citaciones...</p>
                 </div>
             </div>
         </section>
