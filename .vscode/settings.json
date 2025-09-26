@@ -1,0 +1,23 @@
+{
+  "liveServer.settings.port": 5500,
+  "liveServer.settings.root": "./",
+  "liveServer.settings.file": "index.html",
+  "liveServer.settings.mount": [
+    ["/", "./"]
+  ],
+  "liveServer.settings.proxy": {
+    "enable": false
+  },
+  "liveServer.settings.ignoreFiles": [
+    ".vscode/**",
+    "**/*.scss",
+    "**/*.sass",
+    "**/*.ts"
+  ],
+  "liveServer.settings.useWebExt": false,
+  "liveServer.settings.wait": 100,
+  "liveServer.settings.donotShowInfoMsg": true,
+  "liveServer.settings.https": {
+    "enable": false
+  }
+}
