@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEGUNDA COMPAÑÍA BOMBEROS - Sistema de Usuarios</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <!-- Encabezado -->
+    <header id="mainHeader">
+        <div class="header-container">
+            <div class="logo-section">
+                <img src="../assets/logo-compania-2.png" alt="2DA COMPAÑÍA DE BOMBEROS VIÑA DEL MAR" class="logo">
+                <h1>FS2 SOFTWARE BOMBEROS</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/" class="nav-link active" data-section="inicio">🏠 Inicio</a></li>
+                    <li><a href="/bomberos" class="nav-link" data-section="bomberos">🚒 Bomberos</a></li>
+                    <li><a href="/oficiales" class="nav-link" data-section="oficiales">👨‍💼 Oficiales</a></li>
+                    <li><a href="/solicitud" class="nav-link" data-section="solicitud">📋 Solicitud</a></li>
+                    <li><a href="/citaciones" class="nav-link" data-section="citaciones">📅 Citaciones</a></li>
+                </ul>
+            </nav>
+            <div class="user-info-section">
+                <span id="userInfo" class="user-info"></span>
+                <button id="logoutBtn" class="btn-logout">🚪 Cerrar Sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main id="mainContent">
+        <!-- Sección de inicio -->
+        <section id="inicio" class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h2>SEGUNDA COMPAÑÍA DE BOMBEROS DE VIÑA DEL MAR</h2>
+                    <p class="lorem-text">"LEALTAD Y TRABAJO" - Fundada el 14 de Diciembre de 1884</p>
+                    <button id="ver-bomberos" class="btn-principal">VER BOMBEROS</button>
+                </div>
+                <div class="hero-image">
+                    <img src="../assets/logo-compania-2.png" alt="SEGUNDA COMPAÑÍA DE BOMBEROS DE VIÑA DEL MAR" class="hero-logo">
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección bomberos -->
+        <section id="bomberos">
+            <h2>Nuestros Bomberos</h2>
+            <div class="bomberos-grid">
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <img src="../assets/bomberos/bombero-1.jpg" alt="Foto de Bombero 1" class="bombero-photo">
+                    </div>
+                    <h3>BOMBERO 1</h3>
+                    <p class="atributos">Especialista en rescate urbano</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <img src="../assets/bomberos/bombero-2.jpg" alt="Foto de Bombero 2" class="bombero-photo">
+                    </div>
+                    <h3>BOMBERO 2</h3>
+                    <p class="atributos">Experto en materiales peligrosos</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <img src="../assets/bomberos/bombero-3.jpg" alt="Foto de Bombero 3" class="bombero-photo">
+                    </div>
+                    <h3>BOMBERO 3</h3>
+                    <p class="atributos">Conductor de máquina bomba</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <img src="../assets/bomberos/bombero-4.jpg" alt="Foto de Bombero 4" class="bombero-photo">
+                    </div>
+                    <h3>BOMBERO 4</h3>
+                    <p class="atributos">Especialista en primeros auxilios</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <img src="../assets/bomberos/bombero-5.jpg" alt="Foto de Bombero 5" class="bombero-photo">
+                    </div>
+                    <h3>BOMBERO 5</h3>
+                    <p class="atributos">Experto en rescate acuático</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <img src="../assets/bomberos/bombero-6.jpg" alt="Foto de Bombero 6" class="bombero-photo">
+                    </div>
+                    <h3>BOMBERO 6</h3>
+                    <p class="atributos">Especialista en prevención</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <img src="../assets/bomberos/bombero-7.jpg" alt="Foto de Bombero 7" class="bombero-photo">
+                    </div>
+                    <h3>BOMBERO 7</h3>
+                    <p class="atributos">Instructor de entrenamientos</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <img src="../assets/bomberos/bombero-8.jpg" alt="Foto de Bombero 8" class="bombero-photo">
+                    </div>
+                    <h3>BOMBERO 8</h3>
+                    <p class="atributos">Coordinador de emergencias</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección oficiales -->
+        <section id="oficiales">
+            <h2>OFICIALES</h2>
+            <div class="bomberos-grid">
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>👨‍💼</span>
+                    </div>
+                    <h3>DIRECTOR</h3>
+                    <p class="atributos">Máxima autoridad administrativa</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>📋</span>
+                    </div>
+                    <h3>SECRETARIO</h3>
+                    <p class="atributos">Gestión documental y actas</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>💰</span>
+                    </div>
+                    <h3>TESORERO</h3>
+                    <p class="atributos">Administración financiera</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>🎖️</span>
+                    </div>
+                    <h3>CAPITÁN</h3>
+                    <p class="atributos">Comando operativo superior</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>🥇</span>
+                    </div>
+                    <h3>TENIENTE PRIMERO</h3>
+                    <p class="atributos">Segundo al mando operativo</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>🥈</span>
+                    </div>
+                    <h3>TENIENTE SEGUNDO</h3>
+                    <p class="atributos">Apoyo comando operativo</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>🥉</span>
+                    </div>
+                    <h3>TENIENTE TERCERO</h3>
+                    <p class="atributos">Supervisión operativa</p>
+                </div>
+                <div class="bombero-card">
+                    <div class="placeholder-image">
+                        <span>🛠️</span>
+                    </div>
+                    <h3>AYUDANTE</h3>
+                    <p class="atributos">Soporte administrativo</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección solicitud -->
+        <section id="solicitud">
+            <h2>Solicitudes</h2>
+            <div class="solicitud-container">
+                <div class="tipo-solicitud-section">
+                    <h3>Tipo de Solicitud</h3>
+                    <form id="formulario-tipo-solicitud">
+                        <div class="form-group">
+                            <label for="tipo-solicitud">Seleccionar tipo de solicitud:</label>
+                            <select id="tipo-solicitud" name="tipo-solicitud" required>
+                                <option value="">-- Seleccione una opción --</option>
+                                <option value="ingreso">Solicitud de Ingreso</option>
+                                <option value="permiso">Solicitud de Permiso</option>
+                                <option value="licencia">Solicitud de Licencia</option>
+                                <option value="traslado">Solicitud de Traslado</option>
+                                <option value="capacitacion">Solicitud de Capacitación</option>
+                                <option value="equipamiento">Solicitud de Equipamiento</option>
+                                <option value="otra">Otra Solicitud</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre-solicitante">Nombre del Solicitante:</label>
+                            <input type="text" id="nombre-solicitante" name="nombre-solicitante" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rut-solicitante">RUT:</label>
+                            <input type="text" id="rut-solicitante" name="rut-solicitante" placeholder="12.345.678-9" required>
+                        </div>
+                        <button type="button" id="continuar-solicitud">Continuar con Detalles</button>
+                    </form>
+                </div>
+                
+                <div class="detalles-solicitud-section" id="detalles-section" style="display: none;">
+                    <h3>Detalles de la Solicitud</h3>
+                    <p class="info-detalles">Los campos específicos se mostrarán según el tipo de solicitud seleccionado.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección citaciones -->
+        <section id="citaciones">
+            <h2>📅 Mis Citaciones</h2>
+            <div class="citaciones-info">
+                <p class="info-text">� Aquí aparecen las citaciones donde has sido convocado</p>
+            </div>
+            <div class="citaciones-list" id="citacionesUsuario">
+                <!-- Las citaciones se cargan dinámicamente aquí -->
+                <div class="loading-message">
+                    <p>⏳ Cargando citaciones...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <p><strong>🚒 SISTEMA ADMINISTRATIVO BOMBEROS</strong></p>
+                <p>Plataforma de Gestión Integral para Compañías de Bomberos</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 SEGUNDA COMPAÑÍA DE BOMBEROS VIÑA DEL MAR - Sistema de Gestión y Administración Bomberil</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
