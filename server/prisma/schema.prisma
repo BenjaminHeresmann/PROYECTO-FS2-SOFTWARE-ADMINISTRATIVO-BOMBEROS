@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // Modelo de usuarios del sistema
@@ -74,7 +74,7 @@ model Citacion {
   fecha       DateTime
   hora        String
   lugar       String
-  motivo      String   @db.Text
+  motivo      String
   estado      String   @default("Programada") // Programada, Realizada, Cancelada
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -110,7 +110,7 @@ model BomberoCitacion {
 model Solicitud {
   id          Int      @id @default(autoincrement())
   tipo        String   // Permiso, Licencia, Cambio de horario, etc.
-  descripcion String   @db.Text
+  descripcion String
   estado      String   @default("Pendiente") // Pendiente, Aprobada, Rechazada
   fechaSolicitud DateTime @default(now())
   fechaRespuesta DateTime?
@@ -126,7 +126,7 @@ model Solicitud {
 model Evento {
   id          Int      @id @default(autoincrement())
   titulo      String
-  descripcion String   @db.Text
+  descripcion String
   fecha       DateTime
   lugar       String?
   tipo        String   // Entrenamiento, Evento social, Ceremonia, etc.
@@ -144,7 +144,7 @@ model Log {
   tabla     String?  // bomberos, citaciones, usuarios, etc.
   registroId Int?    // ID del registro afectado
   usuarioId Int?
-  detalles  String?  @db.Text
+  detalles  String?
   ip        String?
   userAgent String?
   createdAt DateTime @default(now())
