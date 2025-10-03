@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import authSlice from './slices/authSlice.js'
 import bomberosSlice from './slices/bomberosSlice.js'
 import citacionesSlice from './slices/citacionesSlice.js'
-import oficialesSlice from './slices/oficialesSlice.js'
+import oficialesSlice from '../features/oficiales/oficialesSlice.js'
 
 export const store = configureStore({
   reducer: {

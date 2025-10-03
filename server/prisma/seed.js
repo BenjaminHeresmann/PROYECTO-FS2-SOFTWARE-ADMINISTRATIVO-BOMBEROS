@@ -121,26 +121,81 @@ async function main() {
 
   console.log('📅 Citación creada con bomberos asignados')
 
-  // Crear oficiales
+  // Crear oficiales con nuevo esquema
   const oficiales = await Promise.all([
     prisma.oficial.create({
       data: {
-        nombre: 'Roberto Silva',
-        cargo: 'Comandante',
-        responsabilidad: 'Dirección general de la compañía',
+        nombres: 'Roberto',
+        apellidos: 'Silva Martinez',
+        rut: '12345678-9',
+        rango: 'COMANDANTE',
+        especialidades: 'Administración y Comando',
         telefono: '+56 9 5678 9012',
         email: 'comandante@bomberos.cl',
-        fechaInicio: new Date('2010-01-15')
+        fechaIngreso: new Date('2010-01-15'),
+        departamento: 'COMANDO',
+        activo: true,
+        createdById: admin.id
       }
     }),
     prisma.oficial.create({
       data: {
-        nombre: 'Carmen López',
-        cargo: 'Capitán',
-        responsabilidad: 'Coordinación de operaciones y entrenamientos',
+        nombres: 'Carmen',
+        apellidos: 'López González',
+        rut: '23456789-0',
+        rango: 'CAPITAN',
+        especialidades: 'Operaciones y Entrenamientos',
         telefono: '+56 9 6789 0123',
         email: 'capitan@bomberos.cl',
-        fechaInicio: new Date('2015-03-20')
+        fechaIngreso: new Date('2015-03-20'),
+        departamento: 'OPERACIONES',
+        activo: true,
+        createdById: admin.id
+      }
+    }),
+    prisma.oficial.create({
+      data: {
+        nombres: 'Luis',
+        apellidos: 'Morales Ruiz',
+        rut: '34567890-1',
+        rango: 'TENIENTE',
+        especialidades: 'Materiales Peligrosos',
+        telefono: '+56 9 7890 1234',
+        email: 'teniente@bomberos.cl',
+        fechaIngreso: new Date('2018-06-10'),
+        departamento: 'OPERACIONES',
+        activo: true,
+        createdById: admin.id
+      }
+    }),
+    prisma.oficial.create({
+      data: {
+        nombres: 'Maria',
+        apellidos: 'Fernandez Castro',
+        rut: '45678901-2',
+        rango: 'SARGENTO',
+        especialidades: 'Capacitación y Entrenamientos',
+        telefono: '+56 9 8901 2345',
+        email: 'sargento@bomberos.cl',
+        fechaIngreso: new Date('2020-02-14'),
+        departamento: 'CAPACITACION',
+        activo: true,
+        createdById: admin.id
+      }
+    }),
+    prisma.oficial.create({
+      data: {
+        nombres: 'Jorge',
+        apellidos: 'Ramirez Soto',
+        rut: '56789012-3',
+        rango: 'ALFEREZ',
+        especialidades: 'Mantenimiento de Equipos',
+        telefono: '+56 9 9012 3456',
+        email: 'alferez@bomberos.cl',
+        fechaIngreso: new Date('2021-08-25'),
+        departamento: 'MANTENIMIENTO',
+        activo: true,
+        createdById: admin.id
       }
     })
   ])

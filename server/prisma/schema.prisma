@@ -24,6 +24,7 @@ model User {
 
   // Relaciones
   bomberosCreados Bombero[] @relation("BomberoCreatedBy")
+  oficialesCreados Oficial[] @relation("OficialCreatedBy")
   citacionesCreadas Citacion[] @relation("CitacionCreatedBy")
   citacionesBombero BomberoCitacion[]
 
@@ -52,17 +53,39 @@ model Bombero {
   @@map("bomberos")
 }
 
-// Modelo de oficiales
+// Modelo de oficiales con jerarquía y especialidades
 model Oficial {
-  id             Int      @id @default(autoincrement())
-  nombre         String
-  cargo          String   // Director, Secretario, Tesorero, Capitán, etc.
-  responsabilidad String
-  telefono       String?
-  email          String?
-  fechaInicio    DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                Int       @id @default(autoincrement())
+  nombres           String
+  apellidos         String
+  rut               String    @unique
+  rango             String    // Comandante, Capitán, Teniente, Sargento, etc.
+  cargo             String?   // Director, Subdirector, Jefe de Compañía, etc.
+  especialidades    String?   // JSON array: ["Rescate", "MATPEL", "Primeros Auxilios"]
+  departamento      String?   // Operaciones, Administración, Capacitación, etc.
+  telefono          String?
+  email             String?   @unique
+  fechaIngreso      DateTime?
+  fechaNacimiento   DateTime?
+  direccion         String?
+  estadoCivil       String?
+  nivelEducacion    String?
+  certificaciones   String?   // JSON array de certificaciones
+  experienciaAnios  Int?      // Años de experiencia
+  activo            Boolean   @default(true)
+  observaciones     String?
+  fotoUrl           String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  createdById       Int?
+
+  // Relaciones jerárquicas
+  superiornId       Int?      // ID del oficial superior directo
+  superior          Oficial?  @relation("JerarquiaOficiales", fields: [superiornId], references: [id])
+  subordinados      Oficial[] @relation("JerarquiaOficiales")
+
+  // Relación con usuario del sistema
+  createdBy         User?     @relation("OficialCreatedBy", fields: [createdById], references: [id])
 
   @@map("oficiales")
 }

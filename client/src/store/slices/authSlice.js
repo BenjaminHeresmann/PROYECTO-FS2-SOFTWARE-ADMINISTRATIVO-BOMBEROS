@@ -118,7 +118,4 @@ export const {
   checkAuthToken,
 } = authSlice.actions
 
-// Exportar async actions
-export { loginUser, logoutUser }
-
 export default authSlice.reducer
