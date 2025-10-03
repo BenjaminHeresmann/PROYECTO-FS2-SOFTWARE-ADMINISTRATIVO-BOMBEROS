@@ -31,7 +31,7 @@ import {
   LocalFireDepartment as FireDepartmentIcon,
 } from '@mui/icons-material'
 
-import { logout } from '../store/slices/authSlice'
+import { logoutUser } from '../store/slices/authSlice'
 
 const DRAWER_WIDTH = 280
 
@@ -92,7 +92,7 @@ const Layout = () => {
   }
 
   const handleLogout = () => {
-    dispatch(logout())
+    dispatch(logoutUser())
     handleProfileMenuClose()
     navigate('/login')
   }

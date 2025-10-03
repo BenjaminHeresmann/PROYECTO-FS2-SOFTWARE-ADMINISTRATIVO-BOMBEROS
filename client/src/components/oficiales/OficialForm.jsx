@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -16,17 +16,11 @@ import {
   Box,
   Typography,
   Alert,
-  Autocomplete,
-  Avatar,
-  IconButton,
-  Tooltip
+  Autocomplete
 } from '@mui/material'
 import {
-  PhotoCamera as PhotoCameraIcon,
   Person as PersonIcon
 } from '@mui/icons-material'
-import { useFormik } from 'formik'
-import * as Yup from 'yup'
 
 // Opciones de rangos en orden jerárquico
 const RANGOS_OPTIONS = [
@@ -39,78 +33,17 @@ const RANGOS_OPTIONS = [
   { value: 'BOMBERO', label: 'Bombero', nivel: 1 }
 ]
 
-// Opciones de departamentos
-const DEPARTAMENTOS_OPTIONS = [
-  { value: 'COMANDO', label: 'Comando' },
-  { value: 'OPERACIONES', label: 'Operaciones' },
-  { value: 'CAPACITACION', label: 'Capacitación' },
-  { value: 'MANTENIMIENTO', label: 'Mantenimiento' },
-  { value: 'COMUNICACIONES', label: 'Comunicaciones' },
-  { value: 'ADMINISTRACION', label: 'Administración' }
+// Opciones de especialidades
+const ESPECIALIDADES_OPTIONS = [
+  'Rescate Urbano',
+  'Rescate Vehicular', 
+  'Primeros Auxilios',
+  'Manejo de Incendios',
+  'Materiales Peligrosos',
+  'Rescate en Altura',
+  'Comunicaciones',
+  'Administración'
 ]
-
-// Validación RUT chileno
-const validarRUT = (rut) => {
-  if (!rut) return false
-  
-  const rutPattern = /^(\d{1,2}\.)?\d{3}\.\d{3}-[\dkK]$/
-  if (!rutPattern.test(rut)) return false
-  
-  const cleanRut = rut.replace(/[.-]/g, '')
-  const body = cleanRut.slice(0, -1)
-  const dv = cleanRut.slice(-1).toUpperCase()
-  
-  let sum = 0
-  let multiplier = 2
-  
-  for (let i = body.length - 1; i >= 0; i--) {
-    sum += parseInt(body[i]) * multiplier
-    multiplier = multiplier < 7 ? multiplier + 1 : 2
-  }
-  
-  const expectedDV = 11 - (sum % 11)
-  const calculatedDV = expectedDV === 11 ? '0' : expectedDV === 10 ? 'K' : expectedDV.toString()
-  
-  return dv === calculatedDV
-}
-
-// Esquema de validación
-const validationSchema = Yup.object({
-  nombres: Yup.string()
-    .min(2, 'Los nombres deben tener al menos 2 caracteres')
-    .max(100, 'Los nombres no pueden exceder 100 caracteres')
-    .required('Los nombres son requeridos'),
-  apellidos: Yup.string()
-    .min(2, 'Los apellidos deben tener al menos 2 caracteres')
-    .max(100, 'Los apellidos no pueden exceder 100 caracteres')
-    .required('Los apellidos son requeridos'),
-  rut: Yup.string()
-    .test('rut-valid', 'RUT inválido', validarRUT)
-    .required('El RUT es requerido'),
-  email: Yup.string()
-    .email('Email inválido')
-    .max(255, 'El email no puede exceder 255 caracteres'),
-  telefono: Yup.string()
-    .matches(/^(\+56)?[0-9]{8,9}$/, 'Teléfono debe tener formato válido'),
-  rango: Yup.string()
-    .oneOf(RANGOS_OPTIONS.map(r => r.value), 'Rango inválido')
-    .required('El rango es requerido'),
-  departamento: Yup.string()
-    .oneOf(DEPARTAMENTOS_OPTIONS.map(d => d.value), 'Departamento inválido'),
-  especialidad: Yup.string()
-    .max(100, 'La especialidad no puede exceder 100 caracteres'),
-  experienciaAnios: Yup.number()
-    .min(0, 'La experiencia no puede ser negativa')
-    .max(50, 'La experiencia no puede exceder 50 años'),
-  fechaIngreso: Yup.date()
-    .max(new Date(), 'La fecha de ingreso no puede ser futura'),
-  fechaNacimiento: Yup.date()
-    .max(new Date(), 'La fecha de nacimiento no puede ser futura'),
-  direccion: Yup.string()
-    .max(255, 'La dirección no puede exceder 255 caracteres'),
-  observaciones: Yup.string()
-    .max(500, 'Las observaciones no pueden exceder 500 caracteres')
-})
 
 const OficialForm = ({ 
   open, 
@@ -120,397 +53,357 @@ const OficialForm = ({
   oficiales = [], // Para seleccionar superior
   loading = false 
 }) => {
-  const [photoFile, setPhotoFile] = useState(null)
-  const [photoPreview, setPhotoPreview] = useState(oficial?.fotoUrl || null)
-  
+  const [formData, setFormData] = useState({
+    nombres: '',
+    apellidos: '',
+    rango: '',
+    superiornId: '',
+    especialidad: '',
+    activo: true,
+    telefono: '',
+    email: '',
+    fechaIngreso: ''
+  })
+  const [errors, setErrors] = useState({})
+  const [submitError, setSubmitError] = useState('')
+
   const isEditing = Boolean(oficial)
 
-  const formik = useFormik({
-    initialValues: {
-      nombres: oficial?.nombres || '',
-      apellidos: oficial?.apellidos || '',
-      rut: oficial?.rut || '',
-      email: oficial?.email || '',
-      telefono: oficial?.telefono || '',
-      rango: oficial?.rango || '',
-      departamento: oficial?.departamento || '',
-      especialidad: oficial?.especialidad || '',
-      experienciaAnios: oficial?.experienciaAnios || '',
-      fechaIngreso: oficial?.fechaIngreso ? oficial.fechaIngreso.split('T')[0] : '',
-      fechaNacimiento: oficial?.fechaNacimiento ? oficial.fechaNacimiento.split('T')[0] : '',
-      direccion: oficial?.direccion || '',
-      observaciones: oficial?.observaciones || '',
-      superiorId: oficial?.superiornId || '',
-      activo: oficial?.activo ?? true
-    },
-    validationSchema,
-    onSubmit: (values) => {
+  // Inicializar datos del formulario
+  useEffect(() => {
+    if (oficial && open) {
+      setFormData({
+        nombres: oficial.nombres || '',
+        apellidos: oficial.apellidos || '',
+        rango: oficial.rango || '',
+        superiornId: oficial.superiornId || '',
+        especialidad: oficial.especialidad || '',
+        activo: oficial.activo ?? true,
+        telefono: oficial.telefono || '',
+        email: oficial.email || '',
+        fechaIngreso: oficial.fechaIngreso ? oficial.fechaIngreso.split('T')[0] : ''
+      })
+    } else if (!oficial && open) {
+      // Reset para nuevo oficial
+      setFormData({
+        nombres: '',
+        apellidos: '',
+        rango: '',
+        superiornId: '',
+        especialidad: '',
+        activo: true,
+        telefono: '',
+        email: '',
+        fechaIngreso: ''
+      })
+    }
+    setErrors({})
+    setSubmitError('')
+  }, [oficial, open])
+
+  // Manejar cambios en los campos
+  const handleChange = (field) => (event) => {
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+    
+    // Limpiar error del campo al modificarlo
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }))
+    }
+  }
+
+  // Validar formulario
+  const validateForm = () => {
+    const newErrors = {}
+
+    if (!formData.nombres.trim()) {
+      newErrors.nombres = 'Los nombres son requeridos'
+    } else if (formData.nombres.length < 2) {
+      newErrors.nombres = 'Los nombres deben tener al menos 2 caracteres'
+    }
+
+    if (!formData.apellidos.trim()) {
+      newErrors.apellidos = 'Los apellidos son requeridos'
+    } else if (formData.apellidos.length < 2) {
+      newErrors.apellidos = 'Los apellidos deben tener al menos 2 caracteres'
+    }
+
+    if (!formData.rango) {
+      newErrors.rango = 'El rango es requerido'
+    }
+
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Email inválido'
+    }
+
+    if (formData.telefono && !/^(\+56)?[0-9]{8,9}$/.test(formData.telefono)) {
+      newErrors.telefono = 'Teléfono debe tener formato válido'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  // Manejar envío del formulario
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+
+    try {
+      setSubmitError('')
+      
+      // Preparar datos para envío
       const submitData = {
-        ...values,
-        experienciaAnios: values.experienciaAnios ? parseInt(values.experienciaAnios) : null,
-        superiornId: values.superiorId || null
+        ...formData,
+        superiornId: formData.superiornId || null
       }
-      
-      if (photoFile) {
-        submitData.photo = photoFile
-      }
-      
-      onSubmit(submitData)
-    }
-  })
 
-  const handlePhotoChange = (event) => {
-    const file = event.target.files[0]
-    if (file) {
-      setPhotoFile(file)
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setPhotoPreview(e.target.result)
-      }
-      reader.readAsDataURL(file)
+      await onSubmit(submitData)
+      onClose()
+    } catch (error) {
+      console.error('Error al guardar oficial:', error)
+      setSubmitError(error.message || 'Error al guardar el oficial')
     }
   }
 
-  const handleClose = () => {
-    formik.resetForm()
-    setPhotoFile(null)
-    setPhotoPreview(oficial?.fotoUrl || null)
-    onClose()
-  }
+  // Filtrar oficiales para superior (excluir el oficial actual y sus subordinados)
+  const getAvailableSuperiors = () => {
+    if (!oficial) return oficiales
 
-  // Filtrar oficiales para superior (solo rangos superiores)
-  const getSuperioresOptions = () => {
-    if (!formik.values.rango) return []
-    
-    const rangoActual = RANGOS_OPTIONS.find(r => r.value === formik.values.rango)
-    if (!rangoActual) return []
-    
     return oficiales.filter(o => {
-      if (isEditing && o.id === oficial.id) return false // No puede ser superior de sí mismo
+      // No puede ser superior de sí mismo
+      if (o.id === oficial.id) return false
       
-      const rangoSuperior = RANGOS_OPTIONS.find(r => r.value === o.rango)
-      return rangoSuperior && rangoSuperior.nivel > rangoActual.nivel && o.activo
+      // No puede tener como superior a uno de sus subordinados
+      if (o.superiornId === oficial.id) return false
+      
+      return true
     })
   }
+
+  const availableSuperiors = getAvailableSuperiors()
 
   return (
     <Dialog 
       open={open} 
-      onClose={handleClose} 
-      maxWidth="md" 
+      onClose={onClose}
+      maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: { minHeight: '80vh' }
+        sx: { 
+          minHeight: '600px',
+          bgcolor: 'background.paper'
+        }
       }}
     >
-      <form onSubmit={formik.handleSubmit}>
-        <DialogTitle>
-          {isEditing ? 'Editar Oficial' : 'Nuevo Oficial'}
-        </DialogTitle>
-        
+      <DialogTitle sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 1,
+        bgcolor: 'primary.main',
+        color: 'primary.contrastText',
+        mb: 2
+      }}>
+        <PersonIcon />
+        {isEditing ? 'Editar Oficial' : 'Nuevo Oficial'}
+      </DialogTitle>
+
+      <form onSubmit={handleSubmit}>
         <DialogContent>
-          <Box sx={{ mt: 2 }}>
-            {/* Foto de perfil */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-              <Box sx={{ position: 'relative' }}>
-                <Avatar
-                  src={photoPreview}
-                  sx={{ width: 100, height: 100 }}
-                >
-                  {!photoPreview && <PersonIcon sx={{ fontSize: 50 }} />}
-                </Avatar>
-                <input
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                  id="photo-upload"
-                  type="file"
-                  onChange={handlePhotoChange}
-                />
-                <label htmlFor="photo-upload">
-                  <Tooltip title="Cambiar foto">
-                    <IconButton
-                      component="span"
-                      sx={{
-                        position: 'absolute',
-                        bottom: -8,
-                        right: -8,
-                        bgcolor: 'primary.main',
-                        color: 'white',
-                        '&:hover': { bgcolor: 'primary.dark' }
-                      }}
-                    >
-                      <PhotoCameraIcon />
-                    </IconButton>
-                  </Tooltip>
-                </label>
-              </Box>
-            </Box>
+          {submitError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {submitError}
+            </Alert>
+          )}
 
-            <Grid container spacing={3}>
-              {/* Información personal */}
-              <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom>
-                  Información Personal
-                </Typography>
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Nombres"
-                  name="nombres"
-                  value={formik.values.nombres}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.nombres && Boolean(formik.errors.nombres)}
-                  helperText={formik.touched.nombres && formik.errors.nombres}
-                  required
-                />
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Apellidos"
-                  name="apellidos"
-                  value={formik.values.apellidos}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.apellidos && Boolean(formik.errors.apellidos)}
-                  helperText={formik.touched.apellidos && formik.errors.apellidos}
-                  required
-                />
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="RUT"
-                  name="rut"
-                  value={formik.values.rut}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.rut && Boolean(formik.errors.rut)}
-                  helperText={formik.touched.rut && formik.errors.rut}
-                  placeholder="12.345.678-9"
-                  required
-                />
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
-                />
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Teléfono"
-                  name="telefono"
-                  value={formik.values.telefono}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.telefono && Boolean(formik.errors.telefono)}
-                  helperText={formik.touched.telefono && formik.errors.telefono}
-                  placeholder="+56912345678"
-                />
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Fecha de Nacimiento"
-                  name="fechaNacimiento"
-                  type="date"
-                  value={formik.values.fechaNacimiento}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.fechaNacimiento && Boolean(formik.errors.fechaNacimiento)}
-                  helperText={formik.touched.fechaNacimiento && formik.errors.fechaNacimiento}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-
-              {/* Información profesional */}
-              <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-                  Información Profesional
-                </Typography>
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth required>
-                  <InputLabel>Rango</InputLabel>
-                  <Select
-                    name="rango"
-                    value={formik.values.rango}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.rango && Boolean(formik.errors.rango)}
-                    label="Rango"
-                  >
-                    {RANGOS_OPTIONS.map((rango) => (
-                      <MenuItem key={rango.value} value={rango.value}>
-                        {rango.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Departamento</InputLabel>
-                  <Select
-                    name="departamento"
-                    value={formik.values.departamento}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.departamento && Boolean(formik.errors.departamento)}
-                    label="Departamento"
-                  >
-                    <MenuItem value="">Sin departamento</MenuItem>
-                    {DEPARTAMENTOS_OPTIONS.map((dept) => (
-                      <MenuItem key={dept.value} value={dept.value}>
-                        {dept.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Especialidad"
-                  name="especialidad"
-                  value={formik.values.especialidad}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.especialidad && Boolean(formik.errors.especialidad)}
-                  helperText={formik.touched.especialidad && formik.errors.especialidad}
-                />
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Años de Experiencia"
-                  name="experienciaAnios"
-                  type="number"
-                  value={formik.values.experienciaAnios}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.experienciaAnios && Boolean(formik.errors.experienciaAnios)}
-                  helperText={formik.touched.experienciaAnios && formik.errors.experienciaAnios}
-                  inputProps={{ min: 0, max: 50 }}
-                />
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Fecha de Ingreso"
-                  name="fechaIngreso"
-                  type="date"
-                  value={formik.values.fechaIngreso}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.fechaIngreso && Boolean(formik.errors.fechaIngreso)}
-                  helperText={formik.touched.fechaIngreso && formik.errors.fechaIngreso}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-
-              {/* Jerarquía */}
-              <Grid item xs={12} sm={6}>
-                <Autocomplete
-                  options={getSuperioresOptions()}
-                  getOptionLabel={(option) => `${option.nombres} ${option.apellidos} (${option.rango})`}
-                  value={oficiales.find(o => o.id === formik.values.superiorId) || null}
-                  onChange={(event, newValue) => {
-                    formik.setFieldValue('superiorId', newValue?.id || '')
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Superior Jerárquico"
-                      error={formik.touched.superiorId && Boolean(formik.errors.superiorId)}
-                      helperText={formik.touched.superiorId && formik.errors.superiorId}
-                    />
-                  )}
-                  disabled={!formik.values.rango || formik.values.rango === 'COMANDANTE'}
-                />
-              </Grid>
-
-              {/* Información adicional */}
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Dirección"
-                  name="direccion"
-                  value={formik.values.direccion}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.direccion && Boolean(formik.errors.direccion)}
-                  helperText={formik.touched.direccion && formik.errors.direccion}
-                />
-              </Grid>
-              
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Observaciones"
-                  name="observaciones"
-                  multiline
-                  rows={3}
-                  value={formik.values.observaciones}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.observaciones && Boolean(formik.errors.observaciones)}
-                  helperText={formik.touched.observaciones && formik.errors.observaciones}
-                />
-              </Grid>
-              
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formik.values.activo}
-                      onChange={(e) => formik.setFieldValue('activo', e.target.checked)}
-                      name="activo"
-                    />
-                  }
-                  label="Oficial activo"
-                />
-              </Grid>
+          <Grid container spacing={3}>
+            {/* Información Personal */}
+            <Grid item xs={12}>
+              <Typography variant="h6" color="primary" gutterBottom>
+                Información Personal
+              </Typography>
             </Grid>
 
-            {formik.errors.submit && (
-              <Alert severity="error" sx={{ mt: 2 }}>
-                {formik.errors.submit}
-              </Alert>
-            )}
-          </Box>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Nombres"
+                value={formData.nombres}
+                onChange={handleChange('nombres')}
+                error={!!errors.nombres}
+                helperText={errors.nombres}
+                required
+                variant="outlined"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Apellidos"
+                value={formData.apellidos}
+                onChange={handleChange('apellidos')}
+                error={!!errors.apellidos}
+                helperText={errors.apellidos}
+                required
+                variant="outlined"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange('email')}
+                error={!!errors.email}
+                helperText={errors.email}
+                variant="outlined"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Teléfono"
+                value={formData.telefono}
+                onChange={handleChange('telefono')}
+                error={!!errors.telefono}
+                helperText={errors.telefono}
+                placeholder="Ej: +56912345678"
+                variant="outlined"
+              />
+            </Grid>
+
+            {/* Información Profesional */}
+            <Grid item xs={12}>
+              <Typography variant="h6" color="primary" gutterBottom sx={{ mt: 2 }}>
+                Información Profesional
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth required error={!!errors.rango}>
+                <InputLabel>Rango</InputLabel>
+                <Select
+                  value={formData.rango}
+                  onChange={handleChange('rango')}
+                  label="Rango"
+                >
+                  {RANGOS_OPTIONS.map((rango) => (
+                    <MenuItem key={rango.value} value={rango.value}>
+                      {rango.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {errors.rango && (
+                  <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 2 }}>
+                    {errors.rango}
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Autocomplete
+                options={ESPECIALIDADES_OPTIONS}
+                value={formData.especialidad}
+                onChange={(event, newValue) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    especialidad: newValue || ''
+                  }))
+                }}
+                freeSolo
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Especialidad"
+                    variant="outlined"
+                    helperText="Selecciona o escribe una especialidad"
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Superior Directo</InputLabel>
+                <Select
+                  value={formData.superiornId}
+                  onChange={handleChange('superiornId')}
+                  label="Superior Directo"
+                >
+                  <MenuItem value="">
+                    <em>Sin superior directo</em>
+                  </MenuItem>
+                  {availableSuperiors.map((superior) => (
+                    <MenuItem key={superior.id} value={superior.id}>
+                      {superior.nombres} {superior.apellidos} ({superior.rango})
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Fecha de Ingreso"
+                type="date"
+                value={formData.fechaIngreso}
+                onChange={handleChange('fechaIngreso')}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                variant="outlined"
+              />
+            </Grid>
+
+            {/* Estado */}
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.activo}
+                    onChange={handleChange('activo')}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography>
+                      Estado: {formData.activo ? 'Activo' : 'Inactivo'}
+                    </Typography>
+                  </Box>
+                }
+              />
+            </Grid>
+          </Grid>
         </DialogContent>
-        
-        <DialogActions sx={{ p: 3, pt: 1 }}>
-          <Button onClick={handleClose}>
+
+        <DialogActions sx={{ p: 3, gap: 1 }}>
+          <Button 
+            onClick={onClose}
+            disabled={loading}
+          >
             Cancelar
           </Button>
           <Button 
-            type="submit" 
+            type="submit"
             variant="contained"
-            disabled={loading || !formik.isValid}
+            disabled={loading}
+            sx={{ minWidth: 120 }}
           >
             {loading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear')}
           </Button>

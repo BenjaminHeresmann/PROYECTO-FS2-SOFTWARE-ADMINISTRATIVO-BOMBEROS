@@ -23,10 +23,6 @@ import {
   FilterList,
   Clear
 } from '@mui/icons-material'
-import { DatePicker } from '@mui/x-date-pickers'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { es } from 'date-fns/locale'
 import CitacionCard from './CitacionCard'
 
 const CitacionesList = ({
@@ -121,8 +117,7 @@ const CitacionesList = ({
   const estadoStats = getEstadoStats()
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
-      <Box>
+    <Box>
         {/* Header con título y botón de agregar */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Box>
@@ -270,22 +265,26 @@ const CitacionesList = ({
             <Box mt={2} pt={2} borderTop={1} borderColor="divider">
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                  <DatePicker
+                  <TextField
                     label="Fecha desde"
+                    type="date"
                     value={localFilters.fechaDesde}
-                    onChange={handleDateFilterChange('fechaDesde')}
-                    slotProps={{
-                      textField: { fullWidth: true }
+                    onChange={(e) => handleDateFilterChange('fechaDesde')(e.target.value)}
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
                     }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <DatePicker
+                  <TextField
                     label="Fecha hasta"
+                    type="date"
                     value={localFilters.fechaHasta}
-                    onChange={handleDateFilterChange('fechaHasta')}
-                    slotProps={{
-                      textField: { fullWidth: true }
+                    onChange={(e) => handleDateFilterChange('fechaHasta')(e.target.value)}
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
                     }}
                   />
                 </Grid>
@@ -367,7 +366,6 @@ const CitacionesList = ({
           </Paper>
         )}
       </Box>
-    </LocalizationProvider>
   )
 }
 

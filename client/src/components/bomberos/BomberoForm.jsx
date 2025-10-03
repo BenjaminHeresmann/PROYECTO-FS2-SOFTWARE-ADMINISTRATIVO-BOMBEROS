@@ -28,10 +28,6 @@ import {
   Home as HomeIcon,
   CalendarToday as CalendarIcon
 } from '@mui/icons-material'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { es } from 'date-fns/locale'
 import { useDispatch, useSelector } from 'react-redux'
 import { createBombero, updateBombero, clearError } from '../../store/slices/bomberosSlice'
 
@@ -96,14 +92,6 @@ const BomberoForm = ({ bombero = null, onSuccess, onCancel }) => {
         [field]: ''
       }))
     }
-  }
-
-  // Handle date change
-  const handleDateChange = (date) => {
-    setFormData(prev => ({
-      ...prev,
-      fechaIngreso: date
-    }))
   }
 
   // Validate form
@@ -186,8 +174,7 @@ const BomberoForm = ({ bombero = null, onSuccess, onCancel }) => {
   ]
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
-      <Card>
+    <Card>
         <CardHeader
           title={
             <Box display="flex" alignItems="center">
@@ -369,25 +356,28 @@ const BomberoForm = ({ bombero = null, onSuccess, onCancel }) => {
               </Grid>
 
               <Grid item xs={12} md={6}>
-                <DatePicker
+                <TextField
+                  fullWidth
                   label="Fecha de Ingreso"
-                  value={formData.fechaIngreso}
-                  onChange={handleDateChange}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <CalendarIcon />
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                  )}
-                  maxDate={new Date()}
+                  type="date"
+                  value={formData.fechaIngreso ? formData.fechaIngreso.split('T')[0] : ''}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    fechaIngreso: e.target.value ? new Date(e.target.value).toISOString() : null
+                  }))}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <CalendarIcon />
+                      </InputAdornment>
+                    )
+                  }}
+                  inputProps={{
+                    max: new Date().toISOString().split('T')[0]
+                  }}
                 />
               </Grid>
             </Grid>
@@ -415,7 +405,6 @@ const BomberoForm = ({ bombero = null, onSuccess, onCancel }) => {
           </Box>
         </CardContent>
       </Card>
-    </LocalizationProvider>
   )
 }
 

@@ -16,11 +16,6 @@ import {
   Alert,
   CircularProgress
 } from '@mui/material'
-import { DatePicker, TimePicker } from '@mui/x-date-pickers'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { es } from 'date-fns/locale'
-import { format } from 'date-fns'
 
 const CitacionForm = ({
   open,
@@ -32,8 +27,8 @@ const CitacionForm = ({
 }) => {
   const [formData, setFormData] = useState({
     titulo: '',
-    fecha: new Date(),
-    hora: new Date(),
+    fecha: '',
+    hora: '',
     lugar: '',
     motivo: '',
     estado: 'programada'
@@ -74,21 +69,6 @@ const CitacionForm = ({
     setFormData(prev => ({
       ...prev,
       [field]: value
-    }))
-    
-    // Limpiar error del campo
-    if (formErrors[field]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [field]: null
-      }))
-    }
-  }
-
-  const handleDateChange = (field) => (date) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: date
     }))
     
     // Limpiar error del campo
@@ -153,16 +133,15 @@ const CitacionForm = ({
   const canEditEstado = isEditing && citacion?.estado !== 'realizada'
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
-      <Dialog 
-        open={open} 
-        onClose={handleClose}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          component: 'form',
-          onSubmit: handleSubmit
-        }}
+    <Dialog 
+      open={open} 
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        component: 'form',
+        onSubmit: handleSubmit
+      }}
       >
         <DialogTitle>
           {isEditing ? 'Editar Citación' : 'Nueva Citación'}
@@ -193,36 +172,35 @@ const CitacionForm = ({
 
             {/* Fecha y Hora */}
             <Grid item xs={12} sm={6}>
-              <DatePicker
+              <TextField
                 label="Fecha"
+                type="date"
+                fullWidth
+                required
                 value={formData.fecha}
-                onChange={handleDateChange('fecha')}
+                onChange={handleInputChange('fecha')}
                 disabled={loading}
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    required: true,
-                    error: Boolean(formErrors.fecha),
-                    helperText: formErrors.fecha
-                  }
+                error={Boolean(formErrors.fecha)}
+                helperText={formErrors.fecha}
+                InputLabelProps={{
+                  shrink: true,
                 }}
               />
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <TimePicker
+              <TextField
                 label="Hora"
+                type="time"
+                fullWidth
+                required
                 value={formData.hora}
-                onChange={handleDateChange('hora')}
+                onChange={handleInputChange('hora')}
                 disabled={loading}
-                ampm={false}
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    required: true,
-                    error: Boolean(formErrors.hora),
-                    helperText: formErrors.hora
-                  }
+                error={Boolean(formErrors.hora)}
+                helperText={formErrors.hora}
+                InputLabelProps={{
+                  shrink: true,
                 }}
               />
             </Grid>
@@ -321,7 +299,6 @@ const CitacionForm = ({
           </Button>
         </DialogActions>
       </Dialog>
-    </LocalizationProvider>
   )
 }
 
