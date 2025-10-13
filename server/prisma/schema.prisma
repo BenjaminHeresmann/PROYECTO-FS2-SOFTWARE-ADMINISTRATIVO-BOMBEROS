@@ -51,6 +51,7 @@ model Bombero {
   createdBy   User? @relation("BomberoCreatedBy", fields: [createdById], references: [id])
   citaciones  BomberoCitacion[]
   asignacionesCargo AsignacionCargo[]
+  asignacionesMaterial AsignacionMaterial[]
 
   @@map("bomberos")
 }
@@ -177,3 +178,92 @@ model Log {
 
   @@map("logs")
 }
+
+// ==================== MATERIAL MENOR ====================
+
+// Modelo de categorías de material menor (jerárquicas)
+model Categoria {
+  id              Int       @id @default(autoincrement())
+  nombre          String    @unique
+  descripcion     String?
+  icono           String?   // Nombre del ícono de Material-UI o URL de imagen
+  parentId        Int?      // Categoría padre (null = raíz)
+  activo          Boolean   @default(true) // Soft delete
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relaciones
+  parent          Categoria?  @relation("CategoriasJerarquia", fields: [parentId], references: [id])
+  subcategorias   Categoria[] @relation("CategoriasJerarquia")
+  materiales      Material[]
+
+  @@map("categorias")
+}
+
+// Modelo de material menor (inventario)
+model Material {
+  id                  Int       @id @default(autoincrement())
+  nombre              String
+  descripcion         String?
+  fotoUrl             String?
+  categoriaId         Int?
+  estado              String    @default("Disponible") // Disponible, En Uso, Mantenimiento, Baja
+  tipo                String    // "individual" o "cantidad"
+  numeroSerie         String?   // Solo para tipo "individual"
+  cantidad            Int?      // Solo para tipo "cantidad"
+  unidadMedida        String?   // "unidades", "metros", "kilogramos", etc.
+  fechaAdquisicion    DateTime?
+  ubicacionFisica     String?   // "Bodega A", "Carro 1", "Oficina"
+  fechaVencimiento    DateTime? // Para material con fecha de vencimiento
+  fechaMantencion     DateTime? // Próxima fecha de mantención programada
+  observaciones       String?
+  activo              Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  // Relaciones
+  categoria           Categoria?            @relation(fields: [categoriaId], references: [id])
+  asignaciones        AsignacionMaterial[]
+
+  @@map("material")
+}
+
+// Modelo de asignaciones de material a bomberos (con historial completo)
+model AsignacionMaterial {
+  id              Int       @id @default(autoincrement())
+  materialId      Int
+  bomberoId       Int?      // Asignado a bombero (opcional)
+  carroId         Int?      // Preparado para futuro módulo de carros (opcional)
+  fechaAsignacion DateTime  @default(now())
+  fechaDevolucion DateTime? // null = aún asignado
+  motivo          String?   // Razón de la asignación
+  observaciones   String?
+  cantidadAsignada Int?     // Solo para material tipo "cantidad"
+  activo          Boolean   @default(true) // true = asignación actual, false = historial
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relaciones
+  material        Material  @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  bombero         Bombero?  @relation(fields: [bomberoId], references: [id], onDelete: Cascade)
+  // Futuro: carro Carro? @relation(fields: [carroId], references: [id], onDelete: Cascade)
+
+  @@map("asignaciones_material")
+}
+
+// Modelo preparado para futuro módulo de Carros/Máquinas
+// model Carro {
+//   id                Int       @id @default(autoincrement())
+//   nombre            String    // "Maquina 21", "Bomba 22"
+//   tipo              String    // "rescate", "estructural", "forestal", "telescopica"
+//   placa             String?
+//   estadoOperativo   String    @default("Operativo") // Operativo, Mantenimiento, Fuera de servicio
+//   activo            Boolean   @default(true)
+//   createdAt         DateTime  @default(now())
+//   updatedAt         DateTime  @updatedAt
+//   
+//   // Relaciones
+//   asignaciones      AsignacionMaterial[]
+//
+//   @@map("carros")
+// }

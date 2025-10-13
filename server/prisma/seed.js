@@ -6,7 +6,10 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Iniciando seeders...')
 
-  // Limpiar datos existentes
+  // Limpiar datos existentes (orden importante por relaciones)
+  await prisma.asignacionMaterial.deleteMany()
+  await prisma.material.deleteMany()
+  await prisma.categoria.deleteMany()
   await prisma.asignacionCargo.deleteMany()
   await prisma.cargo.deleteMany()
   await prisma.bomberoCitacion.deleteMany()
@@ -649,6 +652,349 @@ async function main() {
 
   console.log('� Asignaciones de cargos creadas: 4')
   console.log('👨‍✈️ Sistema de cargos configurado')
+
+  // ==================== MATERIAL MENOR ====================
+  
+  // Crear categorías con jerarquía
+  const categorias = await Promise.all([
+    // Categorías principales (sin parent)
+    prisma.categoria.create({
+      data: {
+        nombre: 'Equipos de Protección Personal',
+        descripcion: 'Equipamiento de protección individual para bomberos',
+        icono: 'Shield',
+        activo: true
+      }
+    }),
+    prisma.categoria.create({
+      data: {
+        nombre: 'Herramientas de Rescate',
+        descripcion: 'Herramientas especializadas para operaciones de rescate',
+        icono: 'Build',
+        activo: true
+      }
+    }),
+    prisma.categoria.create({
+      data: {
+        nombre: 'Equipos de Comunicación',
+        descripcion: 'Dispositivos de comunicación y señalización',
+        icono: 'PhoneInTalk',
+        activo: true
+      }
+    }),
+    prisma.categoria.create({
+      data: {
+        nombre: 'Material Médico',
+        descripcion: 'Equipamiento para primeros auxilios y atención médica',
+        icono: 'LocalHospital',
+        activo: true
+      }
+    }),
+    prisma.categoria.create({
+      data: {
+        nombre: 'Equipamiento Vehicular',
+        descripcion: 'Material y accesorios para vehículos de emergencia',
+        icono: 'DirectionsCar',
+        activo: true
+      }
+    })
+  ])
+
+  // Subcategorías (con parent)
+  const subcategorias = await Promise.all([
+    // Subcategorías de EPP
+    prisma.categoria.create({
+      data: {
+        nombre: 'Cascos',
+        descripcion: 'Cascos de protección contra impactos',
+        icono: 'Security',
+        parentId: categorias[0].id,
+        activo: true
+      }
+    }),
+    prisma.categoria.create({
+      data: {
+        nombre: 'Guantes',
+        descripcion: 'Guantes de protección térmica y mecánica',
+        icono: 'PanTool',
+        parentId: categorias[0].id,
+        activo: true
+      }
+    }),
+    prisma.categoria.create({
+      data: {
+        nombre: 'Botas',
+        descripcion: 'Calzado de seguridad especializado',
+        icono: 'DirectionsWalk',
+        parentId: categorias[0].id,
+        activo: true
+      }
+    }),
+    
+    // Subcategorías de Herramientas
+    prisma.categoria.create({
+      data: {
+        nombre: 'Herramientas Manuales',
+        descripcion: 'Herramientas de mano para rescate y corte',
+        icono: 'Handyman',
+        parentId: categorias[1].id,
+        activo: true
+      }
+    }),
+    prisma.categoria.create({
+      data: {
+        nombre: 'Herramientas Hidráulicas',
+        descripcion: 'Equipos hidráulicos de rescate vehicular',
+        icono: 'Settings',
+        parentId: categorias[1].id,
+        activo: true
+      }
+    }),
+    
+    // Subcategorías de Comunicación
+    prisma.categoria.create({
+      data: {
+        nombre: 'Radios',
+        descripcion: 'Equipos de radio comunicación',
+        icono: 'Radio',
+        parentId: categorias[2].id,
+        activo: true
+      }
+    }),
+    
+    // Subcategorías de Material Médico
+    prisma.categoria.create({
+      data: {
+        nombre: 'Botiquines',
+        descripcion: 'Kits de primeros auxilios',
+        icono: 'MedicalServices',
+        parentId: categorias[3].id,
+        activo: true
+      }
+    })
+  ])
+
+  console.log('📦 Categorías creadas:', categorias.length + subcategorias.length)
+
+  // Crear material de ejemplo (mixto: individual y cantidad)
+  const materiales = await Promise.all([
+    // Material individual (con número de serie)
+    prisma.material.create({
+      data: {
+        nombre: 'Casco Structura MSA',
+        descripcion: 'Casco estructural MSA, certificado NFPA 1971',
+        categoriaId: subcategorias[0].id, // Cascos
+        estado: 'En Uso',
+        tipo: 'individual',
+        numeroSerie: 'CSC-001',
+        fechaAdquisicion: new Date('2024-03-15'),
+        ubicacionFisica: 'Cuartel - Bodega A',
+        fechaMantencion: new Date('2025-12-15'),
+        activo: true
+      }
+    }),
+    prisma.material.create({
+      data: {
+        nombre: 'Casco Structura MSA',
+        descripcion: 'Casco estructural MSA, certificado NFPA 1971',
+        categoriaId: subcategorias[0].id,
+        estado: 'Disponible',
+        tipo: 'individual',
+        numeroSerie: 'CSC-002',
+        fechaAdquisicion: new Date('2024-03-15'),
+        ubicacionFisica: 'Cuartel - Bodega A',
+        fechaMantencion: new Date('2025-12-15'),
+        activo: true
+      }
+    }),
+    prisma.material.create({
+      data: {
+        nombre: 'Radio Motorola XPR7550',
+        descripcion: 'Radio portátil digital VHF/UHF',
+        categoriaId: subcategorias[5].id, // Radios
+        estado: 'En Uso',
+        tipo: 'individual',
+        numeroSerie: 'RAD-101',
+        fechaAdquisicion: new Date('2024-06-20'),
+        ubicacionFisica: 'Cuartel - Sala de Comunicaciones',
+        fechaMantencion: new Date('2025-11-20'),
+        activo: true
+      }
+    }),
+    prisma.material.create({
+      data: {
+        nombre: 'Radio Motorola XPR7550',
+        descripcion: 'Radio portátil digital VHF/UHF',
+        categoriaId: subcategorias[5].id,
+        estado: 'Mantenimiento',
+        tipo: 'individual',
+        numeroSerie: 'RAD-102',
+        fechaAdquisicion: new Date('2024-06-20'),
+        ubicacionFisica: 'Taller - Mantención',
+        fechaMantencion: new Date('2025-11-20'),
+        observaciones: 'En reparación por problema con batería',
+        activo: true
+      }
+    }),
+    prisma.material.create({
+      data: {
+        nombre: 'Spreader Hidráulico Holmatro',
+        descripcion: 'Separador hidráulico para rescate vehicular',
+        categoriaId: subcategorias[4].id, // Herramientas Hidráulicas
+        estado: 'Disponible',
+        tipo: 'individual',
+        numeroSerie: 'SPR-HID-001',
+        fechaAdquisicion: new Date('2023-11-10'),
+        ubicacionFisica: 'Maquina 21',
+        fechaMantencion: new Date('2025-10-20'),
+        observaciones: 'Próximo a mantención programada',
+        activo: true
+      }
+    }),
+
+    // Material por cantidad
+    prisma.material.create({
+      data: {
+        nombre: 'Guantes Structura Dragonfire',
+        descripcion: 'Guantes de protección estructural, resistentes al calor',
+        categoriaId: subcategorias[1].id, // Guantes
+        estado: 'Disponible',
+        tipo: 'cantidad',
+        cantidad: 25,
+        unidadMedida: 'pares',
+        fechaAdquisicion: new Date('2024-08-10'),
+        ubicacionFisica: 'Cuartel - Bodega A',
+        activo: true
+      }
+    }),
+    prisma.material.create({
+      data: {
+        nombre: 'Botas Structura Globe',
+        descripcion: 'Botas de seguridad estructural, certificadas',
+        categoriaId: subcategorias[2].id, // Botas
+        estado: 'Disponible',
+        tipo: 'cantidad',
+        cantidad: 18,
+        unidadMedida: 'pares',
+        fechaAdquisicion: new Date('2024-07-05'),
+        ubicacionFisica: 'Cuartel - Bodega B',
+        activo: true
+      }
+    }),
+    prisma.material.create({
+      data: {
+        nombre: 'Vendas Elásticas',
+        descripcion: 'Vendas elásticas para primeros auxilios',
+        categoriaId: subcategorias[6].id, // Botiquines
+        estado: 'Disponible',
+        tipo: 'cantidad',
+        cantidad: 50,
+        unidadMedida: 'unidades',
+        fechaAdquisicion: new Date('2024-09-12'),
+        ubicacionFisica: 'Cuartel - Enfermería',
+        fechaVencimiento: new Date('2026-09-12'),
+        activo: true
+      }
+    }),
+    prisma.material.create({
+      data: {
+        nombre: 'Suero Fisiológico 500ml',
+        descripcion: 'Solución salina estéril para lavado',
+        categoriaId: subcategorias[6].id,
+        estado: 'Disponible',
+        tipo: 'cantidad',
+        cantidad: 30,
+        unidadMedida: 'unidades',
+        fechaAdquisicion: new Date('2024-05-20'),
+        ubicacionFisica: 'Cuartel - Enfermería',
+        fechaVencimiento: new Date('2025-11-20'),
+        observaciones: 'Revisar vencimiento próximamente',
+        activo: true
+      }
+    }),
+    prisma.material.create({
+      data: {
+        nombre: 'Hacha Forestral',
+        descripcion: 'Hacha de mano para combate de incendios forestales',
+        categoriaId: subcategorias[3].id, // Herramientas Manuales
+        estado: 'Disponible',
+        tipo: 'cantidad',
+        cantidad: 8,
+        unidadMedida: 'unidades',
+        fechaAdquisicion: new Date('2023-12-01'),
+        ubicacionFisica: 'Cuartel - Bodega C',
+        fechaMantencion: new Date('2025-11-01'),
+        activo: true
+      }
+    })
+  ])
+
+  console.log('🔧 Material creado:', materiales.length)
+
+  // Crear asignaciones de material (algunas activas, otras como historial)
+  const asignaciones = await Promise.all([
+    // Asignación activa de casco
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[0].id, // Casco CSC-001
+        bomberoId: bomberos[0].id, // Pedro Sánchez
+        fechaAsignacion: new Date('2024-09-01'),
+        motivo: 'Asignación de EPP operativo',
+        observaciones: 'Verificar estado antes de cada guardia',
+        activo: true
+      }
+    }),
+
+    // Asignación activa de radio
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[2].id, // Radio RAD-101
+        bomberoId: bomberos[4].id, // Laura Vargas (Teniente)
+        fechaAsignacion: new Date('2024-10-05'),
+        motivo: 'Radio para oficial al mando',
+        activo: true
+      }
+    }),
+
+    // Asignación histórica (devuelta)
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[3].id, // Radio RAD-102
+        bomberoId: bomberos[1].id, // Carlos Mendoza
+        fechaAsignacion: new Date('2024-08-15'),
+        fechaDevolucion: new Date('2024-10-01'),
+        motivo: 'Radio operativa guardia',
+        observaciones: 'Devuelto por falla en batería',
+        activo: false
+      }
+    }),
+
+    // Asignación activa de cantidad (guantes)
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[5].id, // Guantes
+        bomberoId: bomberos[3].id, // Miguel Torres
+        fechaAsignacion: new Date('2024-09-10'),
+        cantidadAsignada: 1,
+        motivo: 'EPP personal operativo',
+        activo: true
+      }
+    }),
+
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[5].id, // Guantes (otro par del mismo stock)
+        bomberoId: bomberos[7].id, // Jorge Ramírez
+        fechaAsignacion: new Date('2024-09-12'),
+        cantidadAsignada: 1,
+        motivo: 'EPP personal operativo',
+        activo: true
+      }
+    })
+  ])
+
+  console.log('📋 Asignaciones de material creadas:', asignaciones.length)
+  console.log('📦 Sistema de Material Menor configurado')
 
   console.log('✅ Seeders completados exitosamente!')
   console.log('')

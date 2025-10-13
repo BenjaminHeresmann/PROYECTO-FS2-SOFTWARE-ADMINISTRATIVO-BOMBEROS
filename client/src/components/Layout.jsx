@@ -29,6 +29,7 @@ import {
   AccountBox as AccountIcon,
   Logout as LogoutIcon,
   LocalFireDepartment as FireDepartmentIcon,
+  Inventory2 as Inventory2Icon,
 } from '@mui/icons-material'
 
 import { logoutUser } from '../store/slices/authSlice'
@@ -58,6 +59,12 @@ const navigationItems = [
     text: 'Oficiales',
     icon: <AccountIcon />,
     path: '/oficiales',
+    roles: ['admin', 'usuario'],
+  },
+  {
+    text: 'Material Menor',
+    icon: <Inventory2Icon />,
+    path: '/material',
     roles: ['admin', 'usuario'],
   },
   {

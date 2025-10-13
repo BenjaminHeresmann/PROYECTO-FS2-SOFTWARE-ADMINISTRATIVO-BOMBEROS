@@ -13,6 +13,8 @@ import bomberosRoutes from './routes/bomberos.js'
 import citacionesRoutes from './routes/citaciones.js'
 import cargosRoutes from './routes/cargos.js'
 import adminRoutes from './routes/admin.js'
+import categoriasRoutes from './routes/categorias.js'
+import materialRoutes from './routes/material.js'
 
 // Configurar variables de entorno
 dotenv.config()
@@ -90,6 +92,8 @@ app.use('/api/bomberos', bomberosRoutes)
 app.use('/api/citaciones', citacionesRoutes)
 app.use('/api/cargos', cargosRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/categorias', categoriasRoutes)
+app.use('/api/material', materialRoutes)
 
 // Ruta 404
 app.use('*', (req, res) => {
