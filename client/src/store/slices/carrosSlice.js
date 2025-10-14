@@ -21,10 +21,13 @@ export const fetchCarros = createAsyncThunk(
       }).toString()
 
       const response = await api.get(`/carros?${queryParams}`)
+      console.log('📦 fetchCarros response:', response)
+      console.log('📦 response.data:', response.data)
       return response
     } catch (error) {
+      console.error('❌ fetchCarros error:', error)
       return rejectWithValue(
-        error.response?.data?.message || 'Error al cargar carros'
+        error.response?.data?.message || error.message || 'Error al cargar carros'
       )
     }
   }

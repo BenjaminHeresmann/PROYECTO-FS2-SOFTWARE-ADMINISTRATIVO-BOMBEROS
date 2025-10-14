@@ -20,7 +20,9 @@ import CarroDetailDialog from './CarroDetailDialog'
 
 function CarrosTab() {
   const dispatch = useDispatch()
-  const { carros, pagination, loading, filters } = useSelector((state) => state.carros)
+  const { carros, pagination, loading, error } = useSelector((state) => state.carros)
+
+  console.log('CarrosTab state:', { carros, pagination, loading, error })
 
   const [openForm, setOpenForm] = useState(false)
   const [openDetail, setOpenDetail] = useState(false)
@@ -142,7 +144,7 @@ function CarrosTab() {
           <Button 
             variant="contained" 
             onClick={handleApplyFilters}
-            disabled={loading.list}
+            disabled={loading}
           >
             Aplicar Filtros
           </Button>
@@ -168,18 +170,24 @@ function CarrosTab() {
       </Box>
 
       {/* Resultados */}
-      {loading.list ? (
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      
+      {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress />
         </Box>
-      ) : carros.length === 0 ? (
+      ) : !carros || carros.length === 0 ? (
         <Alert severity="info">
           No se encontraron carros con los filtros aplicados
         </Alert>
       ) : (
         <>
           <Grid container spacing={3}>
-            {carros.map((carro) => (
+            {(carros || []).map((carro) => (
               <Grid item xs={12} sm={6} md={4} key={carro.id}>
                 <CarroCard 
                   carro={carro} 
