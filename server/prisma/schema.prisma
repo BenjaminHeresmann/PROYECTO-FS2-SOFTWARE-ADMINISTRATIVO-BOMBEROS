@@ -26,6 +26,9 @@ model User {
   bomberosCreados Bombero[] @relation("BomberoCreatedBy")
   citacionesCreadas Citacion[] @relation("CitacionCreatedBy")
   citacionesBombero BomberoCitacion[]
+  carrosCreados Carro[]
+  historialCarros HistorialCarro[]
+  historialCajoneras HistorialCajonera[]
 
   @@map("users")
 }
@@ -52,6 +55,7 @@ model Bombero {
   citaciones  BomberoCitacion[]
   asignacionesCargo AsignacionCargo[]
   asignacionesMaterial AsignacionMaterial[]
+  conductorHabilitado ConductorHabilitado[]
 
   @@map("bomberos")
 }
@@ -233,7 +237,8 @@ model AsignacionMaterial {
   id              Int       @id @default(autoincrement())
   materialId      Int
   bomberoId       Int?      // Asignado a bombero (opcional)
-  carroId         Int?      // Preparado para futuro módulo de carros (opcional)
+  carroId         Int?      // Si está asignado a un carro
+  cajoneraId      Int?      // Si está dentro de una cajonera específica (opcional)
   fechaAsignacion DateTime  @default(now())
   fechaDevolucion DateTime? // null = aún asignado
   motivo          String?   // Razón de la asignación
@@ -246,24 +251,149 @@ model AsignacionMaterial {
   // Relaciones
   material        Material  @relation(fields: [materialId], references: [id], onDelete: Cascade)
   bombero         Bombero?  @relation(fields: [bomberoId], references: [id], onDelete: Cascade)
-  // Futuro: carro Carro? @relation(fields: [carroId], references: [id], onDelete: Cascade)
+  carro           Carro?    @relation("AsignacionMaterialCarro", fields: [carroId], references: [id], onDelete: Cascade)
+  cajonera        Cajonera? @relation(fields: [cajoneraId], references: [id], onDelete: SetNull)
 
   @@map("asignaciones_material")
 }
 
-// Modelo preparado para futuro módulo de Carros/Máquinas
-// model Carro {
-//   id                Int       @id @default(autoincrement())
-//   nombre            String    // "Maquina 21", "Bomba 22"
-//   tipo              String    // "rescate", "estructural", "forestal", "telescopica"
-//   placa             String?
-//   estadoOperativo   String    @default("Operativo") // Operativo, Mantenimiento, Fuera de servicio
-//   activo            Boolean   @default(true)
-//   createdAt         DateTime  @default(now())
-//   updatedAt         DateTime  @updatedAt
-//   
-//   // Relaciones
-//   asignaciones      AsignacionMaterial[]
-//
-//   @@map("carros")
-// }
+// ============================================
+// MÓDULO: MATERIAL MAYOR (CARROS DE BOMBEROS)
+// ============================================
+
+model Carro {
+  id                      Int       @id @default(autoincrement())
+  
+  // Datos básicos
+  nombre                  String    // "Carro 1", "Bomba B1", "Escala E2"
+  tipo                    String    // "Bomba", "Escala", "Rescate", "Ambulancia", "Forestal"
+  marca                   String?   // "Mercedes-Benz", "Scania"
+  modelo                  String?   // "Atego 1725"
+  anioFabricacion         Int?
+  patente                 String    @unique // "XXXX-00"
+  estadoOperativo         String    @default("Operativo") // Operativo, Mantenimiento, Fuera de servicio
+  
+  // Detalles técnicos operativos (campos fijos principales)
+  capacidadAgua           Int?      // Litros
+  capacidadEspuma         Int?      // Litros
+  potenciaMotobomba       String?   // "500 GPM", "2000 L/min"
+  capacidadMotobomba      String?   // Descripción de capacidad
+  capacidadCarga          String?   // "2 toneladas", "8 personas"
+  
+  // Mantenimiento y documentación
+  fechaProximaMantencion  DateTime?
+  fechaRevisionTecnica    DateTime?
+  fechaPermisoCirculacion DateTime?
+  
+  // Características personalizables (JSON)
+  caracteristicas         Json?     // { "altura_maxima": "30m", "peso": "12000kg", etc }
+  
+  // Observaciones
+  observaciones           String?
+  
+  // Control
+  activo                  Boolean   @default(true)
+  creadoPor               Int?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  
+  // Relaciones
+  cajoneras               Cajonera[]
+  asignacionesMaterial    AsignacionMaterial[] @relation("AsignacionMaterialCarro")
+  conductoresHabilitados  ConductorHabilitado[]
+  mantenciones            MantencionCarro[]
+  historial               HistorialCarro[]
+  creador                 User?     @relation(fields: [creadoPor], references: [id])
+
+  @@map("carros")
+}
+
+model Cajonera {
+  id              Int       @id @default(autoincrement())
+  carroId         Int
+  nombre          String    // "Cajonera 1 - Lado Izquierdo", "Compartimento Superior"
+  estado          String    @default("Operativa") // Operativa, Dañada, En reparación
+  observaciones   String?
+  posicion        Int?      // Orden visual (opcional)
+  activo          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relaciones
+  carro           Carro     @relation(fields: [carroId], references: [id], onDelete: Cascade)
+  materiales      AsignacionMaterial[]
+  historial       HistorialCajonera[]
+
+  @@map("cajoneras")
+}
+
+model ConductorHabilitado {
+  id          Int       @id @default(autoincrement())
+  carroId     Int
+  bomberoId   Int
+  fechaDesde  DateTime  @default(now())
+  fechaHasta  DateTime? // Null = indefinido
+  observaciones String?
+  activo      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relaciones
+  carro       Carro     @relation(fields: [carroId], references: [id], onDelete: Cascade)
+  bombero     Bombero   @relation(fields: [bomberoId], references: [id], onDelete: Cascade)
+
+  @@unique([carroId, bomberoId])
+  @@map("conductores_habilitados")
+}
+
+model MantencionCarro {
+  id                Int       @id @default(autoincrement())
+  carroId           Int
+  tipo              String    // "Mecánica", "Revisión Técnica", "Permiso Circulación", "Preventiva", "Correctiva"
+  descripcion       String
+  fechaRealizada    DateTime
+  proximaFecha      DateTime?
+  costo             Float?    // Costo en moneda local
+  realizadoPor      String?   // Taller, mecánico, etc.
+  observaciones     String?
+  documentos        Json?     // URLs de documentos/facturas
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relaciones
+  carro             Carro     @relation(fields: [carroId], references: [id], onDelete: Cascade)
+
+  @@map("mantenciones_carro")
+}
+
+model HistorialCarro {
+  id          Int       @id @default(autoincrement())
+  carroId     Int
+  tipo        String    // "CREACION", "ACTUALIZACION", "ASIGNACION_MATERIAL", "MANTENCION", "CAMBIO_ESTADO"
+  descripcion String
+  cambios     Json?     // Detalle de cambios realizados
+  usuarioId   Int?
+  createdAt   DateTime  @default(now())
+  
+  // Relaciones
+  carro       Carro     @relation(fields: [carroId], references: [id], onDelete: Cascade)
+  usuario     User?     @relation(fields: [usuarioId], references: [id])
+
+  @@map("historial_carro")
+}
+
+model HistorialCajonera {
+  id          Int       @id @default(autoincrement())
+  cajoneraId  Int
+  tipo        String    // "CREACION", "ACTUALIZACION", "CAMBIO_ESTADO"
+  descripcion String
+  cambios     Json?
+  usuarioId   Int?
+  createdAt   DateTime  @default(now())
+  
+  // Relaciones
+  cajonera    Cajonera  @relation(fields: [cajoneraId], references: [id], onDelete: Cascade)
+  usuario     User?     @relation(fields: [usuarioId], references: [id])
+
+  @@map("historial_cajonera")
+}

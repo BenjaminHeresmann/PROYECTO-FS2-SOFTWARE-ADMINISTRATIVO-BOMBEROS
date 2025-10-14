@@ -30,6 +30,7 @@ import {
   Logout as LogoutIcon,
   LocalFireDepartment as FireDepartmentIcon,
   Inventory2 as Inventory2Icon,
+  LocalShipping as LocalShippingIcon,
 } from '@mui/icons-material'
 
 import { logoutUser } from '../store/slices/authSlice'
@@ -65,6 +66,12 @@ const navigationItems = [
     text: 'Material Menor',
     icon: <Inventory2Icon />,
     path: '/material',
+    roles: ['admin', 'usuario'],
+  },
+  {
+    text: 'Material Mayor',
+    icon: <LocalShippingIcon />,
+    path: '/material-mayor',
     roles: ['admin', 'usuario'],
   },
   {

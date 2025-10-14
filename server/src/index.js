@@ -15,6 +15,7 @@ import cargosRoutes from './routes/cargos.js'
 import adminRoutes from './routes/admin.js'
 import categoriasRoutes from './routes/categorias.js'
 import materialRoutes from './routes/material.js'
+import carrosRoutes from './routes/carros.js'
 
 // Configurar variables de entorno
 dotenv.config()
@@ -94,6 +95,7 @@ app.use('/api/cargos', cargosRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/categorias', categoriasRoutes)
 app.use('/api/material', materialRoutes)
+app.use('/api/carros', carrosRoutes)
 
 // Ruta 404
 app.use('*', (req, res) => {

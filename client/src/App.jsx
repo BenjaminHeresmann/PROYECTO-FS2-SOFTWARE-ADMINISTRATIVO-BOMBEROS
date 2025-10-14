@@ -13,6 +13,7 @@ import CitacionesPage from './pages/CitacionesPage'
 import OficialesPage from './pages/OficialesPage'
 import AdminPage from './pages/AdminPage'
 import MaterialMenorPage from './pages/MaterialMenorPage'
+import MaterialMayorPage from './pages/MaterialMayorPage'
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute'
@@ -47,6 +48,7 @@ function App() {
           <Route path="citaciones" element={<CitacionesPage />} />
           <Route path="oficiales" element={<OficialesPage />} />
           <Route path="material" element={<MaterialMenorPage />} />
+          <Route path="material-mayor" element={<MaterialMayorPage />} />
           
           {/* Panel administrativo */}
           <Route path="admin" element={<AdminPage />} />

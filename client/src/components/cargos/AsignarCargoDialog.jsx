@@ -22,7 +22,7 @@ import { fetchBomberos } from '../../store/slices/bomberosSlice'
 
 const AsignarCargoDialog = ({ open, onClose, cargo }) => {
   const dispatch = useDispatch()
-  const { bomberos } = useSelector((state) => state.bomberos)
+  const { bomberos, loading: bomberosLoading } = useSelector((state) => state.bomberos)
   const { loading, error } = useSelector((state) => state.cargos)
   
   const [bomberoId, setBomberoId] = useState('')
@@ -59,7 +59,7 @@ const AsignarCargoDialog = ({ open, onClose, cargo }) => {
     }
   }
 
-  const bomberoSeleccionado = bomberos?.data?.find(b => b.id === parseInt(bomberoId))
+  const bomberoSeleccionado = bomberos?.find(b => b.id === parseInt(bomberoId))
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -84,25 +84,38 @@ const AsignarCargoDialog = ({ open, onClose, cargo }) => {
               <MenuItem value="">
                 <em>Seleccione un bombero...</em>
               </MenuItem>
-              {bomberos?.data?.map((bombero) => (
-                <MenuItem key={bombero.id} value={bombero.id}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Avatar 
-                      src={bombero.fotoUrl} 
-                      alt={`${bombero.nombres} ${bombero.apellidos}`}
-                      sx={{ width: 32, height: 32 }}
-                    />
-                    <Box>
-                      <Typography variant="body2">
-                        {bombero.nombres} {bombero.apellidos}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {bombero.rango} - {bombero.especialidad || 'Sin especialidad'}
-                      </Typography>
-                    </Box>
-                  </Box>
+              {bomberosLoading ? (
+                <MenuItem disabled>
+                  <CircularProgress size={20} sx={{ mr: 1 }} />
+                  Cargando bomberos...
                 </MenuItem>
-              ))}
+              ) : bomberos && bomberos.length > 0 ? (
+                bomberos.map((bombero) => (
+                  <MenuItem key={bombero.id} value={bombero.id}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Avatar 
+                        src={bombero.fotoUrl} 
+                        alt={`${bombero.nombres} ${bombero.apellidos}`}
+                        sx={{ width: 32, height: 32 }}
+                      />
+                      <Box>
+                        <Typography variant="body2">
+                          {bombero.nombres} {bombero.apellidos}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {bombero.rango} - {bombero.especialidad || 'Sin especialidad'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem disabled>
+                  <Typography variant="caption" color="text.secondary">
+                    No hay bomberos disponibles
+                  </Typography>
+                </MenuItem>
+              )}
             </Select>
           </FormControl>
 

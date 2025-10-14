@@ -7,7 +7,13 @@ async function main() {
   console.log('🌱 Iniciando seeders...')
 
   // Limpiar datos existentes (orden importante por relaciones)
+  await prisma.historialCajonera.deleteMany()
+  await prisma.historialCarro.deleteMany()
+  await prisma.mantencionCarro.deleteMany()
+  await prisma.conductorHabilitado.deleteMany()
   await prisma.asignacionMaterial.deleteMany()
+  await prisma.cajonera.deleteMany()
+  await prisma.carro.deleteMany()
   await prisma.material.deleteMany()
   await prisma.categoria.deleteMany()
   await prisma.asignacionCargo.deleteMany()
@@ -996,11 +1002,516 @@ async function main() {
   console.log('📋 Asignaciones de material creadas:', asignaciones.length)
   console.log('📦 Sistema de Material Menor configurado')
 
+  // ============================================
+  // MÓDULO: MATERIAL MAYOR (CARROS DE BOMBEROS)
+  // ============================================
+
+  console.log('')
+  console.log('🚒 Creando carros de bomberos...')
+
+  const carros = await Promise.all([
+    // Carro 1 - Bomba Principal
+    prisma.carro.create({
+      data: {
+        nombre: 'Bomba B1',
+        tipo: 'Bomba',
+        marca: 'Mercedes-Benz',
+        modelo: 'Atego 1725',
+        anioFabricacion: 2018,
+        patente: 'XXXX-11',
+        estadoOperativo: 'Operativo',
+        capacidadAgua: 3000, // litros
+        capacidadEspuma: 200,
+        potenciaMotobomba: '500 GPM',
+        capacidadMotobomba: '2000 L/min a 10 bar',
+        capacidadCarga: '6 personas',
+        fechaProximaMantencion: new Date('2025-12-15'),
+        fechaRevisionTecnica: new Date('2026-03-20'),
+        fechaPermisoCirculacion: new Date('2025-12-31'),
+        caracteristicas: {
+          altura_maxima: '3.5m',
+          peso: '12000kg',
+          largo: '8.5m',
+          ancho: '2.5m',
+          traccion: '4x2',
+          capacidad_tanque_combustible: '200L'
+        },
+        observaciones: 'Carro principal para incendios estructurales y forestales',
+        creadoPor: admin.id
+      }
+    }),
+
+    // Carro 2 - Escala Mecánica
+    prisma.carro.create({
+      data: {
+        nombre: 'Escala E1',
+        tipo: 'Escala',
+        marca: 'Scania',
+        modelo: 'P 320',
+        anioFabricacion: 2016,
+        patente: 'YYYY-22',
+        estadoOperativo: 'Operativo',
+        capacidadAgua: 1500,
+        capacidadEspuma: 100,
+        potenciaMotobomba: '300 GPM',
+        capacidadMotobomba: '1200 L/min',
+        capacidadCarga: '4 personas',
+        fechaProximaMantencion: new Date('2026-01-10'),
+        fechaRevisionTecnica: new Date('2026-02-15'),
+        fechaPermisoCirculacion: new Date('2025-11-30'),
+        caracteristicas: {
+          altura_maxima_escala: '30m',
+          peso: '15000kg',
+          largo: '10m',
+          ancho: '2.5m',
+          traccion: '4x2',
+          capacidad_cesta: '2 personas - 250kg'
+        },
+        observaciones: 'Escala mecánica para rescates en altura',
+        creadoPor: admin.id
+      }
+    }),
+
+    // Carro 3 - Rescate Vehicular
+    prisma.carro.create({
+      data: {
+        nombre: 'Rescate R1',
+        tipo: 'Rescate',
+        marca: 'Iveco',
+        modelo: 'Daily 70C17',
+        anioFabricacion: 2020,
+        patente: 'ZZZZ-33',
+        estadoOperativo: 'Mantenimiento',
+        capacidadAgua: null,
+        capacidadEspuma: null,
+        potenciaMotobomba: null,
+        capacidadMotobomba: null,
+        capacidadCarga: '5 personas + equipo',
+        fechaProximaMantencion: new Date('2025-10-20'),
+        fechaRevisionTecnica: new Date('2026-04-10'),
+        fechaPermisoCirculacion: new Date('2025-12-15'),
+        caracteristicas: {
+          peso: '7000kg',
+          largo: '6.5m',
+          ancho: '2.2m',
+          traccion: '4x2',
+          equipamiento: 'Herramientas hidráulicas, extricación vehicular'
+        },
+        observaciones: 'En mantenimiento preventivo programado. Vuelve a servicio el 18/10/2025',
+        creadoPor: admin.id
+      }
+    }),
+
+    // Carro 4 - Ambulancia
+    prisma.carro.create({
+      data: {
+        nombre: 'Ambulancia A1',
+        tipo: 'Ambulancia',
+        marca: 'Renault',
+        modelo: 'Master',
+        anioFabricacion: 2019,
+        patente: 'AAAA-44',
+        estadoOperativo: 'Operativo',
+        capacidadAgua: null,
+        capacidadEspuma: null,
+        potenciaMotobomba: null,
+        capacidadMotobomba: null,
+        capacidadCarga: '2 camillados + 3 acompañantes',
+        fechaProximaMantencion: new Date('2025-11-05'),
+        fechaRevisionTecnica: new Date('2026-01-20'),
+        fechaPermisoCirculacion: new Date('2025-12-31'),
+        caracteristicas: {
+          peso: '3500kg',
+          largo: '5.5m',
+          ancho: '2m',
+          equipamiento_medico: 'Completo',
+          categoria: 'Tipo B - Soporte Vital Básico'
+        },
+        observaciones: 'Ambulancia equipada para emergencias médicas',
+        creadoPor: admin.id
+      }
+    })
+  ])
+
+  console.log('🚒 Carros creados:', carros.map(c => c.nombre).join(', '))
+
+  // Crear cajoneras para los carros
+  console.log('📦 Creando cajoneras...')
+
+  const cajoneras = await Promise.all([
+    // Cajoneras para Bomba B1
+    prisma.cajonera.create({
+      data: {
+        carroId: carros[0].id,
+        nombre: 'Cajonera 1 - Mangueras',
+        estado: 'Operativa',
+        posicion: 1,
+        observaciones: 'Contiene mangueras de 45mm y 70mm'
+      }
+    }),
+    prisma.cajonera.create({
+      data: {
+        carroId: carros[0].id,
+        nombre: 'Cajonera 2 - Herramientas de Corte',
+        estado: 'Operativa',
+        posicion: 2,
+        observaciones: 'Herramientas de corte y extricación'
+      }
+    }),
+    prisma.cajonera.create({
+      data: {
+        carroId: carros[0].id,
+        nombre: 'Cajonera 3 - EPP',
+        estado: 'Operativa',
+        posicion: 3,
+        observaciones: 'Equipos de protección personal adicionales'
+      }
+    }),
+
+    // Cajoneras para Escala E1
+    prisma.cajonera.create({
+      data: {
+        carroId: carros[1].id,
+        nombre: 'Compartimento Lateral Izquierdo',
+        estado: 'Operativa',
+        posicion: 1,
+        observaciones: 'Equipos de rescate en altura'
+      }
+    }),
+    prisma.cajonera.create({
+      data: {
+        carroId: carros[1].id,
+        nombre: 'Compartimento Lateral Derecho',
+        estado: 'Operativa',
+        posicion: 2
+      }
+    }),
+
+    // Cajoneras para Rescate R1
+    prisma.cajonera.create({
+      data: {
+        carroId: carros[2].id,
+        nombre: 'Cajonera Principal',
+        estado: 'Operativa',
+        posicion: 1,
+        observaciones: 'Herramientas hidráulicas de rescate'
+      }
+    }),
+    prisma.cajonera.create({
+      data: {
+        carroId: carros[2].id,
+        nombre: 'Cajonera Secundaria',
+        estado: 'Dañada',
+        posicion: 2,
+        observaciones: 'Cerradura dañada, requiere reparación'
+      }
+    }),
+
+    // Cajoneras para Ambulancia A1
+    prisma.cajonera.create({
+      data: {
+        carroId: carros[3].id,
+        nombre: 'Compartimento de Medicamentos',
+        estado: 'Operativa',
+        posicion: 1,
+        observaciones: 'Medicamentos de emergencia'
+      }
+    }),
+    prisma.cajonera.create({
+      data: {
+        carroId: carros[3].id,
+        nombre: 'Compartimento de Equipos',
+        estado: 'Operativa',
+        posicion: 2,
+        observaciones: 'Monitor de signos vitales, desfibrilador'
+      }
+    })
+  ])
+
+  console.log('📦 Cajoneras creadas:', cajoneras.length)
+
+  // Asignar conductores habilitados
+  console.log('👨‍✈️ Asignando conductores habilitados...')
+
+  const conductores = await Promise.all([
+    // Comandante puede conducir Bomba B1 y Escala E1
+    prisma.conductorHabilitado.create({
+      data: {
+        carroId: carros[0].id,
+        bomberoId: bomberos[0].id, // Carlos Muñoz (Comandante)
+        fechaDesde: new Date('2024-01-01'),
+        observaciones: 'Conductor principal de Bomba B1'
+      }
+    }),
+    prisma.conductorHabilitado.create({
+      data: {
+        carroId: carros[1].id,
+        bomberoId: bomberos[0].id, // Carlos Muñoz
+        fechaDesde: new Date('2024-01-01'),
+        observaciones: 'Habilitado para escala mecánica'
+      }
+    }),
+
+    // Capitán puede conducir todos excepto ambulancia
+    prisma.conductorHabilitado.create({
+      data: {
+        carroId: carros[0].id,
+        bomberoId: bomberos[1].id, // Pedro Sánchez (Capitán)
+        fechaDesde: new Date('2024-01-15')
+      }
+    }),
+    prisma.conductorHabilitado.create({
+      data: {
+        carroId: carros[1].id,
+        bomberoId: bomberos[1].id,
+        fechaDesde: new Date('2024-02-01')
+      }
+    }),
+    prisma.conductorHabilitado.create({
+      data: {
+        carroId: carros[2].id,
+        bomberoId: bomberos[1].id,
+        fechaDesde: new Date('2024-01-15')
+      }
+    }),
+
+    // Teniente conduce Rescate y Ambulancia
+    prisma.conductorHabilitado.create({
+      data: {
+        carroId: carros[2].id,
+        bomberoId: bomberos[2].id, // Luis González (Teniente)
+        fechaDesde: new Date('2024-03-01'),
+        observaciones: 'Especialista en rescate vehicular'
+      }
+    }),
+    prisma.conductorHabilitado.create({
+      data: {
+        carroId: carros[3].id,
+        bomberoId: bomberos[2].id,
+        fechaDesde: new Date('2024-03-01'),
+        observaciones: 'Paramédico certificado'
+      }
+    }),
+
+    // Sargento conduce ambulancia
+    prisma.conductorHabilitado.create({
+      data: {
+        carroId: carros[3].id,
+        bomberoId: bomberos[3].id, // Miguel Torres (Sargento)
+        fechaDesde: new Date('2024-04-01'),
+        observaciones: 'Técnico en urgencias médicas'
+      }
+    })
+  ])
+
+  console.log('👨‍✈️ Conductores habilitados asignados:', conductores.length)
+
+  // Crear mantenciones
+  console.log('🔧 Registrando mantenciones...')
+
+  const mantenciones = await Promise.all([
+    // Mantenciones Bomba B1
+    prisma.mantencionCarro.create({
+      data: {
+        carroId: carros[0].id,
+        tipo: 'Mecánica',
+        descripcion: 'Cambio de aceite, filtros y revisión general del motor',
+        fechaRealizada: new Date('2025-06-15'),
+        proximaFecha: new Date('2025-12-15'),
+        costo: 450000,
+        realizadoPor: 'Taller Mercedes-Benz Oficial',
+        observaciones: 'Mantenimiento preventivo programado cumplido'
+      }
+    }),
+    prisma.mantencionCarro.create({
+      data: {
+        carroId: carros[0].id,
+        tipo: 'Revisión Técnica',
+        descripcion: 'Revisión técnica anual obligatoria',
+        fechaRealizada: new Date('2025-03-20'),
+        proximaFecha: new Date('2026-03-20'),
+        costo: 35000,
+        realizadoPor: 'Planta Revisora Técnica Sur',
+        observaciones: 'Aprobada sin observaciones'
+      }
+    }),
+
+    // Mantenciones Escala E1
+    prisma.mantencionCarro.create({
+      data: {
+        carroId: carros[1].id,
+        tipo: 'Preventiva',
+        descripcion: 'Revisión sistema hidráulico de escala mecánica',
+        fechaRealizada: new Date('2025-07-10'),
+        proximaFecha: new Date('2026-01-10'),
+        costo: 850000,
+        realizadoPor: 'Scania Service Center',
+        observaciones: 'Sistema hidráulico en perfecto estado'
+      }
+    }),
+
+    // Mantenciones Rescate R1
+    prisma.mantencionCarro.create({
+      data: {
+        carroId: carros[2].id,
+        tipo: 'Correctiva',
+        descripcion: 'Reparación sistema de frenos y reemplazo de neumáticos',
+        fechaRealizada: new Date('2025-09-28'),
+        proximaFecha: new Date('2026-03-28'),
+        costo: 680000,
+        realizadoPor: 'Taller Iveco Autorizado',
+        observaciones: 'Carro en mantenimiento hasta el 18/10/2025'
+      }
+    }),
+
+    // Mantenciones Ambulancia A1
+    prisma.mantencionCarro.create({
+      data: {
+        carroId: carros[3].id,
+        tipo: 'Mecánica',
+        descripcion: 'Servicio de mantención 10.000 km',
+        fechaRealizada: new Date('2025-05-05'),
+        proximaFecha: new Date('2025-11-05'),
+        costo: 280000,
+        realizadoPor: 'Renault Service',
+        observaciones: 'Próximo a vencer'
+      }
+    })
+  ])
+
+  console.log('🔧 Mantenciones registradas:', mantenciones.length)
+
+  // Asignar material menor a carros (usando materiales ya creados)
+  console.log('🔗 Asignando material menor a carros...')
+
+  const asignacionesCarros = await Promise.all([
+    // Asignar hacha a Bomba B1 en cajonera 2
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[0].id, // Hacha
+        carroId: carros[0].id,
+        cajoneraId: cajoneras[1].id, // Cajonera 2 - Herramientas de Corte
+        fechaAsignacion: new Date('2024-01-15'),
+        motivo: 'Equipo de corte de emergencia',
+        activo: true
+      }
+    }),
+
+    // Asignar casco a Bomba B1 directamente (sin cajonera)
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[1].id, // Casco
+        carroId: carros[0].id,
+        cajoneraId: null, // Sin cajonera específica
+        fechaAsignacion: new Date('2024-01-15'),
+        motivo: 'EPP adicional de emergencia',
+        activo: true
+      }
+    }),
+
+    // Asignar manguera a Bomba B1 en cajonera 1
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[2].id, // Manguera
+        carroId: carros[0].id,
+        cajoneraId: cajoneras[0].id, // Cajonera 1 - Mangueras
+        fechaAsignacion: new Date('2024-01-15'),
+        motivo: 'Equipamiento principal contraincendios',
+        activo: true
+      }
+    }),
+
+    // Asignar extintor a Escala E1
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[3].id, // Extintor
+        carroId: carros[1].id,
+        cajoneraId: cajoneras[3].id, // Compartimento Lateral Izquierdo
+        fechaAsignacion: new Date('2024-02-01'),
+        motivo: 'Equipamiento de seguridad',
+        activo: true
+      }
+    }),
+
+    // Asignar mascarilla a Ambulancia en cajonera de equipos
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[4].id, // Mascarilla
+        carroId: carros[3].id,
+        cajoneraId: cajoneras[8].id, // Compartimento de Equipos
+        fechaAsignacion: new Date('2024-03-01'),
+        motivo: 'EPP médico',
+        activo: true
+      }
+    }),
+
+    // Asignar cantidad de guantes a Bomba B1
+    prisma.asignacionMaterial.create({
+      data: {
+        materialId: materiales[5].id, // Guantes (tipo cantidad)
+        carroId: carros[0].id,
+        cajoneraId: cajoneras[2].id, // Cajonera 3 - EPP
+        cantidadAsignada: 10,
+        fechaAsignacion: new Date('2024-01-20'),
+        motivo: 'Stock de guantes para la tripulación',
+        activo: true
+      }
+    })
+  ])
+
+  console.log('🔗 Material menor asignado a carros:', asignacionesCarros.length)
+
+  // Crear historial de carros
+  console.log('📚 Registrando historial de carros...')
+
+  const historialCarros = await Promise.all([
+    prisma.historialCarro.create({
+      data: {
+        carroId: carros[0].id,
+        tipo: 'CREACION',
+        descripcion: 'Carro Bomba B1 creado en el sistema',
+        usuarioId: admin.id
+      }
+    }),
+    prisma.historialCarro.create({
+      data: {
+        carroId: carros[2].id,
+        tipo: 'CAMBIO_ESTADO',
+        descripcion: 'Carro R1 cambió de estado Operativo a Mantenimiento',
+        cambios: {
+          estadoAnterior: 'Operativo',
+          estadoNuevo: 'Mantenimiento',
+          motivo: 'Mantenimiento correctivo de frenos'
+        },
+        usuarioId: admin.id
+      }
+    }),
+    prisma.historialCarro.create({
+      data: {
+        carroId: carros[0].id,
+        tipo: 'ASIGNACION_MATERIAL',
+        descripcion: 'Se asignaron 6 materiales menores al carro',
+        usuarioId: admin.id
+      }
+    })
+  ])
+
+  console.log('📚 Historial de carros registrado:', historialCarros.length)
+  console.log('🚒 Sistema de Material Mayor configurado')
+
+  console.log('')
   console.log('✅ Seeders completados exitosamente!')
   console.log('')
   console.log('🔐 Credenciales de prueba:')
   console.log('📊 Admin: admin / 1234')
   console.log('👤 Usuario: bombero@bomberos.cl / bomb345')
+  console.log('')
+  console.log('📊 Datos creados:')
+  console.log(`  - ${carros.length} carros de bomberos`)
+  console.log(`  - ${cajoneras.length} cajoneras`)
+  console.log(`  - ${conductores.length} conductores habilitados`)
+  console.log(`  - ${mantenciones.length} mantenciones registradas`)
+  console.log(`  - ${asignacionesCarros.length} materiales asignados a carros`)
 }
 
 main()
