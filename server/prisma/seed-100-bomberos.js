@@ -173,118 +173,130 @@ async function main() {
     prisma.cargo.create({
       data: {
         nombre: 'Director',
-        descripcion: 'Máxima autoridad de la compañía',
+        descripcion: 'Autoridad máxima de la compañía. Representa legalmente a la institución y dirige todas las operaciones.',
         rama: 'ADMINISTRATIVA',
         jerarquia: 1,
-        maxOcupantes: 1
-      }
-    }),
-    prisma.cargo.create({
-      data: {
-        nombre: 'Vice Director',
-        descripcion: 'Segunda autoridad administrativa',
-        rama: 'ADMINISTRATIVA',
-        jerarquia: 2,
-        maxOcupantes: 1
+        maxOcupantes: 1,
+        activo: true
       }
     }),
     prisma.cargo.create({
       data: {
         nombre: 'Secretario',
-        descripcion: 'Encargado de documentación y actas',
+        descripcion: 'Responsable de la documentación oficial, actas y comunicaciones de la compañía.',
         rama: 'ADMINISTRATIVA',
-        jerarquia: 3,
-        maxOcupantes: 1
+        jerarquia: 2,
+        maxOcupantes: 1,
+        activo: true
       }
     }),
     prisma.cargo.create({
       data: {
         nombre: 'Tesorero',
-        descripcion: 'Administración de fondos',
+        descripcion: 'Administra los recursos financieros, presupuesto y contabilidad de la compañía.',
         rama: 'ADMINISTRATIVA',
-        jerarquia: 4,
-        maxOcupantes: 1
+        jerarquia: 3,
+        maxOcupantes: 1,
+        activo: true
       }
     }),
-
+    
     // RAMA OPERATIVA
     prisma.cargo.create({
       data: {
-        nombre: 'Superintendente',
-        descripcion: 'Jefe de operaciones de emergencia',
+        nombre: 'Capitán',
+        descripcion: 'Comandante de las operaciones de emergencia. Máxima autoridad en el terreno.',
         rama: 'OPERATIVA',
         jerarquia: 1,
-        maxOcupantes: 1
+        maxOcupantes: 1,
+        activo: true
       }
     }),
     prisma.cargo.create({
       data: {
-        nombre: 'Ayudante Superintendente',
-        descripcion: 'Apoyo en operaciones',
+        nombre: 'Teniente Primero',
+        descripcion: 'Segundo al mando en operaciones. Asiste al Capitán en la coordinación de emergencias.',
         rama: 'OPERATIVA',
         jerarquia: 2,
-        maxOcupantes: 1
+        maxOcupantes: 1,
+        activo: true
       }
     }),
     prisma.cargo.create({
       data: {
-        nombre: 'Capitán de Máquina',
-        descripcion: 'Responsable del carro bomba',
+        nombre: 'Teniente Segundo',
+        descripcion: 'Tercer oficial en la línea de mando operativo.',
         rama: 'OPERATIVA',
         jerarquia: 3,
-        maxOcupantes: 1
+        maxOcupantes: 1,
+        activo: true
       }
     }),
     prisma.cargo.create({
       data: {
-        nombre: 'Capitán de Escala',
-        descripcion: 'Responsable del carro escala',
+        nombre: 'Teniente Tercero',
+        descripcion: 'Cuarto oficial en la línea de mando operativo.',
         rama: 'OPERATIVA',
         jerarquia: 4,
-        maxOcupantes: 1
+        maxOcupantes: 1,
+        activo: true
       }
     }),
-
+    prisma.cargo.create({
+      data: {
+        nombre: 'Ayudante',
+        descripcion: 'Asiste en las operaciones y coordina el personal en terreno.',
+        rama: 'OPERATIVA',
+        jerarquia: 5,
+        maxOcupantes: 1,
+        activo: true
+      }
+    }),
+    
     // CONSEJOS DE DISCIPLINA
     prisma.cargo.create({
       data: {
-        nombre: 'Presidente Consejo',
-        descripcion: 'Preside el consejo de disciplina',
+        nombre: 'Consejero de Disciplina 1',
+        descripcion: 'Miembro del consejo encargado de velar por el cumplimiento del reglamento y la disciplina.',
         rama: 'CONSEJOS',
         jerarquia: 1,
-        maxOcupantes: 1
+        maxOcupantes: 1,
+        activo: true
       }
     }),
     prisma.cargo.create({
       data: {
-        nombre: 'Secretario Consejo',
-        descripcion: 'Secretario del consejo',
+        nombre: 'Consejero de Disciplina 2',
+        descripcion: 'Miembro del consejo encargado de velar por el cumplimiento del reglamento y la disciplina.',
         rama: 'CONSEJOS',
         jerarquia: 2,
-        maxOcupantes: 1
+        maxOcupantes: 1,
+        activo: true
       }
     }),
     prisma.cargo.create({
       data: {
-        nombre: 'Consejero',
-        descripcion: 'Miembro del consejo de disciplina',
+        nombre: 'Consejero de Disciplina 3',
+        descripcion: 'Miembro del consejo encargado de velar por el cumplimiento del reglamento y la disciplina.',
         rama: 'CONSEJOS',
         jerarquia: 3,
-        maxOcupantes: 4
+        maxOcupantes: 1,
+        activo: true
       }
     }),
     prisma.cargo.create({
       data: {
-        nombre: 'Fiscal',
-        descripcion: 'Fiscal del consejo',
+        nombre: 'Consejero de Disciplina 4',
+        descripcion: 'Miembro del consejo encargado de velar por el cumplimiento del reglamento y la disciplina.',
         rama: 'CONSEJOS',
         jerarquia: 4,
-        maxOcupantes: 1
+        maxOcupantes: 1,
+        activo: true
       }
     })
   ])
 
-  console.log(`✅ ${cargos.length} cargos creados`)
+  console.log('🏛️ Cargos creados:', cargos.length)
 
   // ==================== CITACIONES ====================
   console.log('📋 Creando citaciones de ejemplo...')
